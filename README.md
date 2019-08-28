@@ -1,50 +1,18 @@
-# snips-action-test_rs
-#### test rs
+# Generated Snips skill
+
+This is a generated python2 snips skill using the `snips-template` tool.
+It is compatible with the format expected by the `snips-skill-server`
 
 ## Setup
 
-```sh
-# Install the dependencies and creates the config.ini file.
-sh setup.sh
-```
+This skill requires some python dependencies to work properly, these are
+listed in the `requirements.txt`. You can use the `setup.sh` script to
+create a python virtualenv that will be recognized by the skill server
+and install them in it.
 
-## API Documentation
+## Executables
 
-Check the [javascript-toolkit](https://github.com/snipsco/snips-javascript-toolkit) package that this code uses under the hood.
-
-## Run
-
-- Dev mode:
-
-```sh
-# Dev mode watches for file changes and restarts the action.
-npm run dev
-```
-
-- Prod mode:
-
-```sh
-# 1) Lint, transpile and test.
-npm start
-# 2) Run the action.
-npm run launch
-```
-
-## Debug
-
-In the `src/index.js` file:
-
-```js
-// Replace 'error' with '*' to log everything
-logger.enable('error')
-```
-
-## Test & Lint
-
-*Requires [mosquitto](https://mosquitto.org/download/) to be installed.*
-
-```sh
-npm start
-```
-
-**In test mode, i18n output and http calls are mocked.**
+This dir contains a number of python executables named `action-*.py`.
+One such file is generated per intent supported. These are standalone
+executables and will perform a connection to MQTT and register on the
+given intent using the `hermes-python` helper lib.
