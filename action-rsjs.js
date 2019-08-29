@@ -81,6 +81,17 @@ withHermes(hermes => {
             console.log(data);
         })
 */
+
+        const fetchPromise = fetch(server + "domotics/menu");
+        fetchPromise.then(response => {
+            console.log("@@@@@@@@@@@@@@@@@@@@@@@");
+            console.log(response);
+            return response.json();
+        }).then(data => {
+            console.log("@@@@@@@@@@@@@@@@@@@@@@@");
+            console.log(data);
+        });
+
         // Use text to speech
         return 'Voici le menu sur votre écran. Quelle entrée voulez-vous?';
     })
