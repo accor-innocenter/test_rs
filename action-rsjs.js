@@ -25,7 +25,7 @@ withHermes(hermes => {
     
                 flow.continue('AccorInnovationCenter:Dessert',(msg,flow) =>  {
                     console.log(JSON.stringify(msg))
-        
+        /*
                     let url = server + "domotics/fitness";
                     var payload = { };
                     var data = new FormData();
@@ -43,9 +43,15 @@ withHermes(hermes => {
                         console.log("@@@@@@@@@@@@@@@@@@@@@@@");
                         console.log(data);
                     })
-                    
+
+*/
+                    // End the session
+                    flow.end();
+
+
                     return msg.slots[0].value.value+" est une spécialité de la maison. Très bien, votre commande arrivera dans 20 minutes."
         
+                    
                 });
                 
                 return msg.slots[0].value.value+", parfait. Et quel dessert souhaitez-vous déguster?"
@@ -56,10 +62,7 @@ withHermes(hermes => {
 
         });
 
-        // End the session
-        flow.end();
-
-
+/*
         let url = server + "domotics/menu";
         var payload = { };
         var data = new FormData();
@@ -77,7 +80,7 @@ withHermes(hermes => {
             console.log("@@@@@@@@@@@@@@@@@@@@@@@");
             console.log(data);
         })
-
+*/
         // Use text to speech
         return 'Voici le menu sur votre écran. Quelle entrée voulez-vous?';
     })
