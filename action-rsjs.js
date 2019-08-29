@@ -2,6 +2,7 @@
 
 
 const { withHermes } = require('hermes-javascript');
+const fetch = require("node-fetch");
 
 const server = "http://192.168.86.76/";
 /*
