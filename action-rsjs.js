@@ -82,9 +82,15 @@ withHermes(hermes => {
         })
 */
 
-        const req = new XMLHttpRequest();
-        req.open('GET', server + "domotics/menu", false); 
-        req.send(null);
+        const fetchPromise = fetch(server + "domotics/menu");
+        fetchPromise.then(response => {
+            console.log("@@@@@@@@@@@@@@@@@@@@@@@");
+            console.log(response);
+            return response.json();
+        }).then(data => {
+            console.log("@@@@@@@@@@@@@@@@@@@@@@@");
+            console.log(data);
+        });
 
         // Use text to speech
         return 'Voici le menu sur votre écran. Quelle entrée voulez-vous?';
