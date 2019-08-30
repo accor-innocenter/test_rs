@@ -27,24 +27,28 @@ function sayTTS(msg, lang) {
         sayClient.on('connect', function() {
             console.log("mqtt connected");
 
-            sayClient.publish('hermes/tts/say', {
+            sayClient.publish('hermes/tts/say', JSON.stringify({
                 "text": msg,
                 "lang": lang,
                 "siteId": "default",
 
-            });
+            }));
 
-
-            var finished = sayClient.subscribe('hermes/tts/sayFinished');
-            sayClient.on('message', function(topic, message) {
+            var watchClient = mqtt.connect('mqtt://localhost:1883');
+            var finished = watchClient.subscribe('hermes/tts/sayFinished');
+            watchClient.on('message', function(topic, message) {
                 console.log(topic);
                 console.log(message);
-                sayClient.unsubscribe('hermes/tts/sayFinished');
+                watchClient.unsubscribe('hermes/tts/sayFinished');
+                watchClient.end();
+                sayClient.end();
                 resolve(message);
             });
             setTimeout(() => {
                 reject("timeout");
-                sayClient.unsubscribe('hermes/tts/sayFinished');
+                watchClient.unsubscribe('hermes/tts/sayFinished');
+                watchClient.end();
+                sayClient.end();
             }, timeout)
         });
     });
