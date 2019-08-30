@@ -30,11 +30,11 @@ function sayTTS(msg, lang) {
 
         sayClient.on('connect', function() {
 
-            sayClient.publish('hermes/tts/say', {
+            sayClient.publish('hermes/tts/say', JSON.stringify({
                 "text": msg,
                 "lang": lang,
                 "id": "mySayTTS"
-            });
+            }));
 
             var finished = sayClient.subscribe('hermes/tts/sayFinished');
             sayClient.on('message', function(topic, message) {
