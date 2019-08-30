@@ -169,7 +169,7 @@ async function RunMe() {
 
             await sayTTS("Ceci est un test de TTS", "fr");
             await sayTTS("Deuxième message à la suite", "fr");
-            setTimeout(function() {
+            setTimeout(async function() {
                 await sayTTS("Troisième message 5 secondes après.");
             }, 5000);
 
