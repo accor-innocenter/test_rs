@@ -154,18 +154,21 @@ withHermes(async hermes => {
 
             });
             */
-        /*
-                    //SHOW MENU ON SCREEN
-                    const fetchPromise = fetch(server + "domotics/menu");
-                    fetchPromise.then(response => {
-                        console.log("@@@@@@@@@@@@@@@@@@@@@@@");
-                        console.log(response);
-                        return response.json();
-                    }).then(data => {
-                        console.log("@@@@@@@@@@@@@@@@@@@@@@@");
-                        console.log(data);
-                    });
-        */
+
+        //SHOW MENU ON SCREEN
+        const fetchPromise = fetch(server + "domotics/menu");
+        fetchPromise.then(response => {
+            //console.log("@@@@@@@@@@@@@@@@@@@@@@@");
+            //console.log(response);
+        }).then(data => {
+            //console.log("@@@@@@@@@@@@@@@@@@@@@@@");
+            //console.log(data);
+        });
+
+
+
+        await sayTTS("Voici le menu sur l'écran");
+
 
         await myWait(5);
 
