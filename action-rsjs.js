@@ -128,22 +128,18 @@ withHermes(async hermes => {
 
 
         // Use text to speech
-        sayTTS("Voici le menu sur l'écran.", "fr")
-            .then((data) => {
-                console.log("C'est bon: " + data);
+        await sayTTS("Voici le menu sur l'écran.", "fr");
 
-                //SHOW MENU ON SCREEN
-                const fetchPromise = fetch(server + "domotics/menu");
-                fetchPromise.then(response => {
-
-                }).then(data => {
-                    setTimeout(() => {
-                        sayTTS("Que désirez-vous comme entrée?", "fr")
-                    }, 5000);
-                });
+        const fetchPromise = fetch(server + "domotics/menu");
 
 
-            });
+        setTimeout(async() => {
+            await sayTTS("Que désirez-vous comme entrée?", "fr")
+        }, 5000);
+
+
+
+
 
     })
 })
