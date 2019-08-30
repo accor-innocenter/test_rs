@@ -8,12 +8,6 @@ const mqtt = require('mqtt');
 //Server adress
 const server = "http://192.168.86.76:1880/";
 
-//MQTT connection
-var client = mqtt.connect('mqtt://localhost:1883')
-client.on('connect', function() {
-    client.subscribe('hermes/intent/CrystalMethod:hello')
-})
-
 //Variables for the dishes
 var FirstDish = "";
 var SecondDish = "";
@@ -33,12 +27,12 @@ function sayTTS(msg, lang) {
         sayClient.on('connect', function() {
             console.log("mqtt connected");
 
-            sayClient.publish('hermes/tts/say', JSON.stringify({
+            sayClient.publish('hermes/tts/say', {
                 "text": msg,
                 "lang": lang,
                 "siteId": "default",
 
-            }));
+            });
 
 
             var finished = sayClient.subscribe('hermes/tts/sayFinished');
@@ -50,6 +44,7 @@ function sayTTS(msg, lang) {
             });
             setTimeout(() => {
                 reject("timeout");
+                sayClient.unsubscribe('hermes/tts/sayFinished');
             }, timeout)
         });
     });
