@@ -49,36 +49,37 @@ function sayTTS(msg, lang) {
 }
 
 
-async function sayTTSandWait(msg, lang) {
+function sayTTSawait(msg, lang) {
 
-    console.log("sayTTSandWait called");
+    console.log("sayTTS called");
     const timeout = 15000;
 
+    return new Promise(function(resolve, reject) {
 
-    var sayClient = mqtt.connect('mqtt://localhost:1883');
-    console.log("set mqtt");
+        var sayClient = mqtt.connect('mqtt://localhost:1883');
+        console.log("set mqtt");
 
-    console.log("mqtt connected");
+        console.log("mqtt connected");
 
-    sayClient.publish('hermes/tts/say', JSON.stringify({
-        "text": msg,
-        "lang": lang,
-        "siteId": "default",
+        sayClient.publish('hermes/tts/say', JSON.stringify({
+            "text": msg,
+            "lang": lang,
+            "siteId": "default",
 
-    }));
+        }));
 
 
-    var finished = sayClient.subscribe('hermes/tts/sayFinished');
-    sayClient.on('message', function(topic, message) {
-        console.log(topic);
-        console.log(message);
-        sayClient.unsubscribe('hermes/tts/sayFinished');
-        return message;
+        var finished = sayClient.subscribe('hermes/tts/sayFinished');
+        sayClient.on('message', function(topic, message) {
+            console.log(topic);
+            console.log(message);
+            sayClient.unsubscribe('hermes/tts/sayFinished');
+            resolve(message);
+        });
+        setTimeout(() => {
+            reject("timeout");
+        }, timeout)
     });
-    setTimeout(() => {
-        return "timeout";
-    }, timeout)
-
 
 }
 
@@ -182,17 +183,29 @@ withHermes(hermes => {
         // Use text to speech
 
         flow.end();
+        /*
+                sayTTS("Ceci est un test de TTS", "fr")
+                    .then((data) => {
+                        console.log("C'est bon: " + data);
 
-        await sayTTSandWait("Ceci est un test de TTS", "fr");
-        console.log("C'est bon");
+                        sayTTS("Deuxième message à la suite", "fr").then((data) => {
+                            console.log("C'est bon 2e: " + data);
+                            setTimeout(function() {
+                                sayTTS("Troisième message 5 secondes après.")
+                            }, 5000)
+                        })
 
-        await sayTTSandWait("Deuxième message à la suite", "fr")
-        console.log("C'est bon 2e");
-
+                    })
+                    .catch((error) => {
+                        console.log("Erreur: " + error)
+                        return 'Il y a eu une erreur';
+                    })
+        */
+        await sayTTS("Ceci est un test de TTS", "fr");
+        await sayTTS("Deuxième message à la suite", "fr");
         setTimeout(function() {
-            await sayTTSandWait("Troisième message 5 secondes après.")
-        }, 5000)
-
+            await sayTTS("Troisième message 5 secondes après.");
+        }, 5000);
 
     })
 })
