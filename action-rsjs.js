@@ -19,6 +19,8 @@ function sayTTS(msg, lang) {
 
     return new Promise((resolve) => {
 
+        var mqtt = require('mqtt');
+
         console.log("sayTTS called");
 
         var sayClient = mqtt.connect('mqtt://localhost:1883');
@@ -34,6 +36,7 @@ function sayTTS(msg, lang) {
             console.log(topic);
             console.log(message);
             sayClient.unsubscribe('hermes/tts/sayFinished');
+            sayClient.end();
             resolve(message);
         });
 
@@ -42,25 +45,6 @@ function sayTTS(msg, lang) {
 
 }
 
-function Send(msg, lang) {
-
-    var mqtt = require('mqtt');
-
-    var client = mqtt.connect()
-
-    client.on('connect', function() {
-
-        client.publish('hermes/tts/say', JSON.stringify({
-            "text": msg,
-            "lang": lang,
-            "siteId": "default"
-        }));
-
-
-        client.end();
-    });
-
-}
 
 withHermes(async hermes => {
     // Instantiate a dialog object
