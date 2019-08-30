@@ -22,19 +22,24 @@ var Dessert = "";
 
 function sayTTS(msg, lang) {
 
+    console.log("sayTTS called");
     const timeout = 15000;
 
     return new Promise(function(resolve, reject) {
 
         var sayClient = mqtt.connect('mqtt://localhost:1883');
+        console.log("set mqtt");
 
         sayClient.on('connect', function() {
+            console.log("mqtt connected");
 
             sayClient.publish('hermes/tts/say', JSON.stringify({
                 "text": msg,
                 "lang": lang,
-                "id": "mySayTTS"
+                "siteId": "default",
+
             }));
+
 
             var finished = sayClient.subscribe('hermes/tts/sayFinished');
             sayClient.on('message', function(topic, message) {
@@ -150,6 +155,8 @@ withHermes(hermes => {
         });
 
         // Use text to speech
+
+        flow.end();
 
         sayTTS("Ceci est un test de TTS", "fr_FR")
             .then((data) => {
