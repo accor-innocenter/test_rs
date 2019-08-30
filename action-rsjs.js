@@ -24,37 +24,63 @@ function sayTTS(msg, lang) {
         var sayClient = mqtt.connect('mqtt://localhost:1883');
         console.log("set mqtt");
 
-        sayClient.on('connect', function() {
-            console.log("mqtt connected");
+        console.log("mqtt connected");
 
-            sayClient.publish('hermes/tts/say', JSON.stringify({
-                "text": msg,
-                "lang": lang,
-                "siteId": "default",
+        sayClient.publish('hermes/tts/say', JSON.stringify({
+            "text": msg,
+            "lang": lang,
+            "siteId": "default",
 
-            }));
+        }));
 
-            var watchClient = mqtt.connect('mqtt://localhost:1883');
-            var finished = watchClient.subscribe('hermes/tts/sayFinished');
-            watchClient.on('message', function(topic, message) {
-                console.log(topic);
-                console.log(message);
-                watchClient.unsubscribe('hermes/tts/sayFinished');
-                watchClient.end();
-                sayClient.end();
-                resolve(message);
-            });
-            setTimeout(() => {
-                reject("timeout");
-                watchClient.unsubscribe('hermes/tts/sayFinished');
-                watchClient.end();
-                sayClient.end();
-            }, timeout)
+
+        var finished = sayClient.subscribe('hermes/tts/sayFinished');
+        sayClient.on('message', function(topic, message) {
+            console.log(topic);
+            console.log(message);
+            sayClient.unsubscribe('hermes/tts/sayFinished');
+            resolve(message);
         });
+        setTimeout(() => {
+            reject("timeout");
+        }, timeout)
     });
 
 }
 
+
+async function sayTTSandWait(msg, lang) {
+
+    console.log("sayTTSandWait called");
+    const timeout = 15000;
+
+
+    var sayClient = mqtt.connect('mqtt://localhost:1883');
+    console.log("set mqtt");
+
+    console.log("mqtt connected");
+
+    sayClient.publish('hermes/tts/say', JSON.stringify({
+        "text": msg,
+        "lang": lang,
+        "siteId": "default",
+
+    }));
+
+
+    var finished = sayClient.subscribe('hermes/tts/sayFinished');
+    sayClient.on('message', function(topic, message) {
+        console.log(topic);
+        console.log(message);
+        sayClient.unsubscribe('hermes/tts/sayFinished');
+        return message;
+    });
+    setTimeout(() => {
+        return "timeout";
+    }, timeout)
+
+
+}
 
 withHermes(hermes => {
     // Instantiate a dialog object
@@ -157,22 +183,16 @@ withHermes(hermes => {
 
         flow.end();
 
-        sayTTS("Ceci est un test de TTS", "fr")
-            .then((data) => {
-                console.log("C'est bon: " + data);
+        await sayTTSandWait("Ceci est un test de TTS", "fr");
+        console.log("C'est bon");
 
-                sayTTS("Deuxième message à la suite", "fr").then((data) => {
-                    console.log("C'est bon 2e: " + data);
-                    setTimeout(function() {
-                        sayTTS("Troisième message 5 secondes après.")
-                    }, 5000)
-                })
+        await sayTTSandWait("Deuxième message à la suite", "fr")
+        console.log("C'est bon 2e");
 
-            })
-            .catch((error) => {
-                console.log("Erreur: " + error)
-                return 'Il y a eu une erreur';
-            })
+        setTimeout(function() {
+            await sayTTSandWait("Troisième message 5 secondes après.")
+        }, 5000)
+
 
     })
 })
