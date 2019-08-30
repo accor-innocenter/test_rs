@@ -161,9 +161,14 @@ withHermes(hermes => {
         sayTTS("Ceci est un test de TTS", "fr")
             .then((data) => {
                 console.log("C'est bon: " + data);
-                setTimeout(function() {
-                    sayTTS("Deuxième message 10 secondes après le premier", "fr")
-                }, 10000);
+
+                sayTTS("Deuxième message à la suite", "fr").then((data) => {
+                    console.log("C'est bon 2e: " + data);
+                    setTimeout(function() {
+                        sayTTS("Troisième message 5 secondes après.")
+                    }, 5000)
+                })
+
             })
             .catch((error) => {
                 console.log("Erreur: " + error)
