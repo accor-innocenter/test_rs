@@ -1,20 +1,21 @@
 {
-  "name": "rsjs",
-  "version": "1.0.0",
-  "description": "",
-  "main": "action-rsjs.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
-  "author": "Me",
-  "license": "MIT",
-  "dependencies": {
-    "hermes-javascript": "^0.3.11",
-    "ini": "^1.3.5",
-    "node-fetch": "^2.6.0"
-  },
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/accor-innocenter/test_rs.git"
-  }
+    "name": "rsjs",
+    "version": "1.0.0",
+    "description": "",
+    "main": "action-rsjs.js",
+    "scripts": {
+        "test": "echo \"Error: no test specified\" && exit 1"
+    },
+    "author": "Me",
+    "license": "MIT",
+    "dependencies": {
+        "hermes-javascript": "^0.3.11",
+        "ini": "^1.3.5",
+        "node-fetch": "^2.6.0",
+        "mqtt": "^2.18.0"
+    },
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/accor-innocenter/test_rs.git"
+    }
 }

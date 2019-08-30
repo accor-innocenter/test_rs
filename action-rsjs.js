@@ -3,30 +3,86 @@
 
 const { withHermes } = require('hermes-javascript');
 const fetch = require("node-fetch");
+const mqtt = require('mqtt');
 
-const server = "http://192.168.86.76/";
-/*
-    A small js context manager that sets up an infinite loop to prevent
-    the process from exiting, and exposes an instance of the Hermes class.
-*/
+//Server adress
+const server = "http://192.168.86.76:1880/";
+
+//MQTT connection
+var client = mqtt.connect('mqtt://localhost:1883')
+client.on('connect', function() {
+    client.subscribe('hermes/intent/CrystalMethod:hello')
+})
+
+//Variables for the dishes
+var FirstDish = "";
+var SecondDish = "";
+var Dessert = "";
+
+
+function sayTTS(msg, lang) {
+
+    const timeout = 15000;
+
+    return new Promise(function(resolve, reject) {
+
+        var sayClient = mqtt.connect('mqtt://localhost:1883');
+
+        sayClient.on('connect', function() {
+
+            sayClient.publish('hermes/tts/say', {
+                "text": msg,
+                "lang": lang,
+                "id": "mySayTTS"
+            });
+
+            var finished = sayClient.subscribe('hermes/tts/sayFinished');
+            sayClient.on('message', function(topic, message) {
+                console.log(topic);
+                console.log(message);
+                finished.unsubscribe();
+                resolve(message);
+            });
+            setTimeout(() => {
+                reject("timeout");
+            }, timeout)
+        });
+    });
+
+}
+
+
 withHermes(hermes => {
     // Instantiate a dialog object
     const dialog = hermes.dialog()
+
 
     // Subscribes to intent 'myIntent'
     dialog.flow('AccorInnovationCenter:OrderRS', (msg, flow) => {
         // Log intent message
         console.log(JSON.stringify(msg))
-    
-        flow.continue('AccorInnovationCenter:FirstCourse',(msg,flow) =>  {
-            console.log(JSON.stringify(msg))
 
-            flow.continue('AccorInnovationCenter:SecondCourse',(msg,flow) =>  {
+
+        flow.continue('AccorInnovationCenter:FirstCourse', (msg, flow) => {
+            console.log(JSON.stringify(msg));
+
+            const aux = msg.slots.find(slot => slot.slotName === 'Dish1');
+            this.FirstDish = aux.value.value;
+
+            flow.continue('AccorInnovationCenter:SecondCourse', (msg, flow) => {
                 console.log(JSON.stringify(msg))
-    
-                flow.continue('AccorInnovationCenter:Dessert',(msg,flow) =>  {
+
+                const aux = msg.slots.find(slot => slot.slotName === 'Dish2');
+                this.SecondDish = aux.value.value;
+
+
+                flow.continue('AccorInnovationCenter:Dessert', (msg, flow) => {
                     console.log(JSON.stringify(msg))
-        /*
+
+                    const aux = msg.slots.find(slot => slot.slotName === 'Dessert');
+                    this.Dessert = aux.value.value;
+
+                    /*
                     let url = server + "domotics/fitness";
                     var payload = { };
                     var data = new FormData();
@@ -50,38 +106,38 @@ withHermes(hermes => {
                     flow.end();
 
 
-                    return msg.slots[0].value.value+" est une spécialité de la maison. Très bien, votre commande arrivera dans 20 minutes."
-        
-                    
+                    return msg.slots[0].value.value + " est une spécialité de la maison. Très bien, votre commande arrivera dans 20 minutes."
+
+
                 });
-                
-                return msg.slots[0].value.value+", parfait. Et quel dessert souhaitez-vous déguster?"
-    
+
+                return msg.slots[0].value.value + ", parfait. Et quel dessert souhaitez-vous déguster?"
+
             });
 
-            return msg.slots[0].value.value+", excellent choix. Quel sera votre plat principal?"
+            return msg.slots[0].value.value + ", excellent choix. Quel sera votre plat principal?"
 
         });
 
-/*
-        let url = server + "domotics/menu";
-        var payload = { };
-        var data = new FormData();
-        data.append( "json", JSON.stringify( payload ) );
-        fetch(url,
-        {
-            method: "GET",
-            body: data
-        })
-        .then((res)=>{ 
-            console.log("@@@@@@@@@@@@@@@@@@@@@@@");
-            console.log(res);
-        })
-        .then((data)=>{ 
-            console.log("@@@@@@@@@@@@@@@@@@@@@@@");
-            console.log(data);
-        })
-*/
+        /*
+                let url = server + "domotics/menu";
+                var payload = { };
+                var data = new FormData();
+                data.append( "json", JSON.stringify( payload ) );
+                fetch(url,
+                {
+                    method: "GET",
+                    body: data
+                })
+                .then((res)=>{ 
+                    console.log("@@@@@@@@@@@@@@@@@@@@@@@");
+                    console.log(res);
+                })
+                .then((data)=>{ 
+                    console.log("@@@@@@@@@@@@@@@@@@@@@@@");
+                    console.log(data);
+                })
+        */
 
         const fetchPromise = fetch(server + "domotics/menu");
         fetchPromise.then(response => {
@@ -94,6 +150,14 @@ withHermes(hermes => {
         });
 
         // Use text to speech
-        return 'Voici le menu sur votre écran. Quelle entrée voulez-vous?';
+
+        sayTTS("Ceci est un test de TTS", "fr_FR")
+            .then((data) => {
+                return 'Tout est bon';
+            })
+            .catch((error) => {
+                return 'Il y a eu une erreur';
+            })
+
     })
 })
