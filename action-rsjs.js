@@ -53,7 +53,7 @@ async function RunMe() {
 
 
         // Subscribes to intent 'myIntent'
-        dialog.flow('AccorInnovationCenter:OrderRS', (msg, flow) => {
+        dialog.flow('AccorInnovationCenter:OrderRS', async(msg, flow) => {
             // Log intent message
             console.log(JSON.stringify(msg))
 
@@ -165,6 +165,8 @@ async function RunMe() {
                             return 'Il y a eu une erreur';
                         })
             */
+
+
             await sayTTS("Ceci est un test de TTS", "fr");
             await sayTTS("Deuxième message à la suite", "fr");
             setTimeout(function() {
