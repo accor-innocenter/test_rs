@@ -46,13 +46,13 @@ function sayTTS(msg, lang) {
 }
 
 
-withHermes(async hermes => {
+withHermes(hermes => {
     // Instantiate a dialog object
     const dialog = hermes.dialog()
 
 
     // Subscribes to intent 'myIntent'
-    dialog.flow('AccorInnovationCenter:OrderRS', async(msg, flow) => {
+    dialog.flow('AccorInnovationCenter:OrderRS', (msg, flow) => {
         // Log intent message
         console.log(JSON.stringify(msg))
 
@@ -147,9 +147,9 @@ withHermes(async hermes => {
             });
             */
 
-        setTimeout(() => {
-            return "Que desirz-vous comme entrée?";
-        }, 5000);
+
+        return "Que desirz-vous comme entrée?";
+
 
     })
 })
