@@ -16,45 +16,10 @@ var Dessert = "";
 
 function sayTTS(msg, lang) {
 
-    console.log("sayTTS called");
-    const timeout = 15000;
+    return new Promise((resolve) => {
 
-    return new Promise(function(resolve, reject) {
-
-        var sayClient = mqtt.connect('mqtt://localhost:1883');
-        console.log("set mqtt");
-
-        console.log("mqtt connected");
-
-        sayClient.publish('hermes/tts/say', JSON.stringify({
-            "text": msg,
-            "lang": lang,
-            "siteId": "default",
-
-        }));
-
-
-        var finished = sayClient.subscribe('hermes/tts/sayFinished');
-        sayClient.on('message', function(topic, message) {
-            console.log(topic);
-            console.log(message);
-            sayClient.unsubscribe('hermes/tts/sayFinished');
-            resolve(message);
-        });
-        setTimeout(() => {
-            reject("timeout");
-        }, timeout)
-    });
-
-}
-
-
-function sayTTSawait(msg, lang) {
-
-    console.log("sayTTS called");
-    const timeout = 15000;
-
-    return new Promise(function(resolve, reject) {
+        console.log("sayTTS called");
+        const timeout = 15000;
 
         var sayClient = mqtt.connect('mqtt://localhost:1883');
         console.log("set mqtt");
@@ -70,22 +35,19 @@ function sayTTSawait(msg, lang) {
 
 
         var finished = sayClient.subscribe('hermes/tts/sayFinished');
-        sayClient.on('message', function(topic, message) {
+        sayClient.on('message', (topic, message) => {
             console.log(topic);
             console.log(message);
             sayClient.unsubscribe('hermes/tts/sayFinished');
             resolve(message);
         });
-        setTimeout(() => {
-            reject("timeout");
-        }, timeout)
     });
 
 }
 
 
 async function RunMe() {
-    withHermes(hermes => {
+    withHermes(async hermes => {
         // Instantiate a dialog object
         const dialog = hermes.dialog()
 
