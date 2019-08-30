@@ -3,8 +3,8 @@
 
 const { withHermes } = require('hermes-javascript');
 const fetch = require("node-fetch");
-const mqtt = require('mqtt');
-const client = mqtt.connect('mqtt://localhost:1883');
+//const mqtt = require('mqtt');
+//const client = mqtt.connect('mqtt://localhost:1883');
 
 //Server adress
 const server = "http://192.168.86.76:1880/";
@@ -44,6 +44,25 @@ function sayTTS(msg, lang) {
 
 }
 
+function Send(msg, lang) {
+
+    var mqtt = require('mqtt');
+
+    var client = mqtt.connect()
+
+    client.on('connect', function() {
+
+        client.publish('hermes/tts/say', JSON.stringify({
+            "text": msg,
+            "lang": lang,
+            "siteId": "default"
+        }));
+
+
+        client.end();
+    });
+
+}
 
 async function RunMe() {
     withHermes(async hermes => {
@@ -166,14 +185,8 @@ async function RunMe() {
             */
 
 
-            await sayTTS("Ceci est un test de TTS", "fr");
-            await sayTTS("Deuxième message à la suite", "fr");
-            sayClient.publish('hermes/tts/say', JSON.stringify({
-                "text": "Ceci est un message plutot long qui est directement injecté.",
-                "lang": "fr",
-                "siteId": "default"
-
-            }));
+            await Send("Ceci est un test de TTS", "fr");
+            await Send("Deuxième message à la suite", "fr");
 
         })
     })
