@@ -50,7 +50,7 @@ function myWait(timeSec) {
     return new Promise((resolve) => {
 
         setTimeout(() => {
-            resolve(message);
+            resolve(true);
         }, timeSec * 1000);
 
 
