@@ -45,14 +45,27 @@ function sayTTS(msg, lang) {
 
 }
 
+function myWait(timeSec) {
 
-withHermes(hermes => {
+    return new Promise((resolve) => {
+
+        setTimeout(() => {
+            resolve(message);
+        }, timeSec * 1000);
+
+
+    });
+
+}
+
+
+withHermes(async hermes => {
     // Instantiate a dialog object
     const dialog = hermes.dialog()
 
 
     // Subscribes to intent 'myIntent'
-    dialog.flow('AccorInnovationCenter:OrderRS', (msg, flow) => {
+    dialog.flow('AccorInnovationCenter:OrderRS', async(msg, flow) => {
         // Log intent message
         console.log(JSON.stringify(msg))
 
@@ -60,28 +73,23 @@ withHermes(hermes => {
         flow.continue('AccorInnovationCenter:FirstCourse', (msg, flow) => {
             console.log(JSON.stringify(msg));
 
-            const aux = msg.slots.find(slot => slot.slotName === 'Dish1');
-            this.FirstDish = aux.value.value;
+            this.FirstDish = msg.slots[0].value.value;
+            console.log("first: " + FirstDish);
 
             flow.continue('AccorInnovationCenter:SecondCourse', (msg, flow) => {
                 console.log(JSON.stringify(msg))
 
-                const aux = msg.slots.find(slot => slot.slotName === 'Dish2');
-                this.SecondDish = aux.value.value;
-
+                this.SecondDish = msg.slots[0].value.value;
+                console.log("second: " + SecondDish);
 
                 flow.continue('AccorInnovationCenter:Dessert', (msg, flow) => {
                     console.log(JSON.stringify(msg))
 
-                    const aux = msg.slots.find(slot => slot.slotName === 'Dessert');
-                    this.Dessert = aux.value.value;
+                    this.Dessert = msg.slots[0].value.value
+                    console.log("dessert: " + Dessert);
 
                     flow.continue('AccorInnovationCenter:Yes ', (msg, flow) => {
                         console.log(JSON.stringify(msg))
-
-                        const aux = msg.slots.find(slot => slot.slotName === 'Dessert');
-                        this.Dessert = aux.value.value;
-
 
                         // End the session
                         flow.end();
@@ -146,7 +154,20 @@ withHermes(hermes => {
 
             });
             */
+        /*
+                    //SHOW MENU ON SCREEN
+                    const fetchPromise = fetch(server + "domotics/menu");
+                    fetchPromise.then(response => {
+                        console.log("@@@@@@@@@@@@@@@@@@@@@@@");
+                        console.log(response);
+                        return response.json();
+                    }).then(data => {
+                        console.log("@@@@@@@@@@@@@@@@@@@@@@@");
+                        console.log(data);
+                    });
+        */
 
+        await myWait(5);
 
         return "Que desirz-vous comme entrée?";
 
