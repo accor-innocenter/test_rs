@@ -158,11 +158,13 @@ withHermes(hermes => {
 
         flow.end();
 
-        sayTTS("Ceci est un test de TTS", "fr_FR")
+        sayTTS("Ceci est un test de TTS", "fr")
             .then((data) => {
+                console.log("C'est bon: " + data);
                 return 'Tout est bon';
             })
             .catch((error) => {
+                console.log("Erreur: " + error)
                 return 'Il y a eu une erreur';
             })
 
