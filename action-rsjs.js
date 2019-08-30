@@ -76,15 +76,45 @@ withHermes(async hermes => {
                     const aux = msg.slots.find(slot => slot.slotName === 'Dessert');
                     this.Dessert = aux.value.value;
 
+                    flow.continue('AccorInnovationCenter:Yes ', (msg, flow) => {
+                        console.log(JSON.stringify(msg))
+
+                        const aux = msg.slots.find(slot => slot.slotName === 'Dessert');
+                        this.Dessert = aux.value.value;
 
 
+                        // End the session
+                        flow.end();
 
-                    // End the session
-                    flow.end();
+                        return "Très bien, votre commande arrivera dans 20 minutes"
+
+                    });
+                    flow.continue('AccorInnovationCenter:None ', (msg, flow) => {
+                        console.log(JSON.stringify(msg))
+
+                        const aux = msg.slots.find(slot => slot.slotName === 'Dessert');
+                        this.Dessert = aux.value.value;
 
 
-                    return msg.slots[0].value.value + " est une spécialité de la maison. Très bien, votre commande arrivera dans 20 minutes."
+                        // End the session
+                        flow.end();
 
+                        return "Ok, j'annule tout. N'hésitez pas à me redemander."
+
+                    });
+
+                    var resume = "";
+                    if (FirstDish !== "None") resume += "en entrée " + FirstDish + ", ";
+                    if (SecondDish !== "None") resume += "en plat principal " + SecondDish + ", ";
+                    if (Dessert !== "None") resume += "et en dessert " + Dessert + ". ";
+
+                    if (Dessert !== "None") {
+                        return msg.slots[0].value.value + " est une spécialité de la maison. On a " + resume + "Ceci est correct?";
+
+                    } else {
+                        return "On a " + resume + "Ceci est correct?";
+
+                    }
 
                 });
 
@@ -97,38 +127,95 @@ withHermes(async hermes => {
         });
 
 
-        //SHOW MENU ON SCREEN
-        const fetchPromise = fetch(server + "domotics/menu");
-        fetchPromise.then(response => {
-            console.log("@@@@@@@@@@@@@@@@@@@@@@@");
-            console.log(response);
-            return response.json();
-        }).then(data => {
-            console.log("@@@@@@@@@@@@@@@@@@@@@@@");
-            console.log(data);
-        });
+        flow.continue('AccorInnovationCenter:None', (msg, flow) => {
+            console.log(JSON.stringify(msg));
+
+            const aux = msg.slots.find(slot => slot.slotName === 'Dish1');
+            this.FirstDish = aux.value.value;
+
+            flow.continue('AccorInnovationCenter:SecondCourse', (msg, flow) => {
+                console.log(JSON.stringify(msg))
+
+                const aux = msg.slots.find(slot => slot.slotName === 'Dish2');
+                this.SecondDish = aux.value.value;
 
 
-        // Use text to speech
+                flow.continue('AccorInnovationCenter:Dessert', (msg, flow) => {
+                    console.log(JSON.stringify(msg))
 
-        flow.end();
+                    const aux = msg.slots.find(slot => slot.slotName === 'Dessert');
+                    this.Dessert = aux.value.value;
 
-        sayTTS("Ceci est un test de TTS", "fr")
-            .then((data) => {
-                console.log("C'est bon: " + data);
+                    flow.continue('AccorInnovationCenter:Yes ', (msg, flow) => {
+                        console.log(JSON.stringify(msg))
 
-                sayTTS("Deuxième message à la suite", "fr")
-                    .then((data) => {
-                        console.log("C'est bon 2e: " + data);
-                        setTimeout(function() {
-                            sayTTS("Troisième message 5 secondes après.")
-                        }, 5000)
-                    })
+                        const aux = msg.slots.find(slot => slot.slotName === 'Dessert');
+                        this.Dessert = aux.value.value;
+
+
+                        // End the session
+                        flow.end();
+
+                        return "Très bien, votre commande arrivera dans 20 minutes"
+
+                    });
+                    flow.continue('AccorInnovationCenter:None ', (msg, flow) => {
+                        console.log(JSON.stringify(msg))
+
+                        const aux = msg.slots.find(slot => slot.slotName === 'Dessert');
+                        this.Dessert = aux.value.value;
+
+
+                        // End the session
+                        flow.end();
+
+                        return "Ok, j'annule tout. N'hésitez pas à me redemander."
+
+                    });
+
+                    var resume = "";
+                    if (FirstDish !== "None") resume += "en entrée " + FirstDish + ", ";
+                    if (SecondDish !== "None") resume += "en plat principal " + SecondDish + ", ";
+                    if (Dessert !== "None") resume += "et en dessert " + Dessert + ". ";
+
+                    if (Dessert !== "None") {
+                        return msg.slots[0].value.value + " est une spécialité de la maison. On a " + resume + "Ceci est correct?";
+
+                    } else {
+                        return "On a " + resume + "Ceci est correct?";
+
+                    }
+
+                });
+
+                return msg.slots[0].value.value + ", parfait. Et quel dessert souhaitez-vous déguster?"
 
             });
 
+            return "Pas de souci, passons au suivant. Quel sera votre plat principal?"
 
-        return true;
+        });
+
+
+
+
+        // Use text to speech
+        sayTTS("Voici le menu sur l'écran.", "fr")
+            .then((data) => {
+                console.log("C'est bon: " + data);
+
+                //SHOW MENU ON SCREEN
+                const fetchPromise = fetch(server + "domotics/menu");
+                fetchPromise.then(response => {
+
+                }).then(data => {
+                    setTimeout(() => {
+                        return "Que desirez-vous comme entrée?";
+                    }, 5000);
+                });
+
+
+            });
 
     })
 })
