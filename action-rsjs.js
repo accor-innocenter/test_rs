@@ -57,10 +57,78 @@ withHermes(async hermes => {
         console.log(JSON.stringify(msg))
 
 
+        flow.continue('AccorInnovationCenter:FirstCourse', (msg, flow) => {
+            console.log(JSON.stringify(msg));
 
+            const aux = msg.slots.find(slot => slot.slotName === 'Dish1');
+            this.FirstDish = aux.value.value;
+
+            flow.continue('AccorInnovationCenter:SecondCourse', (msg, flow) => {
+                console.log(JSON.stringify(msg))
+
+                const aux = msg.slots.find(slot => slot.slotName === 'Dish2');
+                this.SecondDish = aux.value.value;
+
+
+                flow.continue('AccorInnovationCenter:Dessert', (msg, flow) => {
+                    console.log(JSON.stringify(msg))
+
+                    const aux = msg.slots.find(slot => slot.slotName === 'Dessert');
+                    this.Dessert = aux.value.value;
+
+                    flow.continue('AccorInnovationCenter:Yes ', (msg, flow) => {
+                        console.log(JSON.stringify(msg))
+
+                        const aux = msg.slots.find(slot => slot.slotName === 'Dessert');
+                        this.Dessert = aux.value.value;
+
+
+                        // End the session
+                        flow.end();
+
+                        return "Très bien, votre commande arrivera dans 20 minutes"
+
+                    });
+                    flow.continue('AccorInnovationCenter:None ', (msg, flow) => {
+                        console.log(JSON.stringify(msg))
+
+                        const aux = msg.slots.find(slot => slot.slotName === 'Dessert');
+                        this.Dessert = aux.value.value;
+
+
+                        // End the session
+                        flow.end();
+
+                        return "Ok, j'annule tout. N'hésitez pas à me redemander."
+
+                    });
+
+                    var resume = "";
+                    if (FirstDish !== "None") resume += "en entrée " + FirstDish + ", ";
+                    if (SecondDish !== "None") resume += "en plat principal " + SecondDish + ", ";
+                    if (Dessert !== "None") resume += "et en dessert " + Dessert + ". ";
+
+                    if (Dessert !== "None") {
+                        return msg.slots[0].value.value + " est une spécialité de la maison. On a " + resume + "Ceci est correct?";
+
+                    } else {
+                        return "On a " + resume + "Ceci est correct?";
+
+                    }
+
+                });
+
+                return msg.slots[0].value.value + ", parfait. Et quel dessert souhaitez-vous déguster?"
+
+            });
+
+            return msg.slots[0].value.value + ", excellent choix. Quel sera votre plat principal?"
+
+        });
 
 
         // Use text to speech
+        /*
         sayTTS("Voici le menu sur l'écran.", "fr")
             .then((data) => {
                 console.log("C'est bon: " + data);
@@ -71,87 +139,17 @@ withHermes(async hermes => {
 
                 }).then(data => {
                     setTimeout(() => {
-                        sayTTS("Que désirez-vous comme entrée?", "fr");
-
-
-                        flow.continue('AccorInnovationCenter:FirstCourse', (msg, flow) => {
-                            console.log(JSON.stringify(msg));
-
-                            const aux = msg.slots.find(slot => slot.slotName === 'Dish1');
-                            this.FirstDish = aux.value.value;
-
-                            flow.continue('AccorInnovationCenter:SecondCourse', (msg, flow) => {
-                                console.log(JSON.stringify(msg))
-
-                                const aux = msg.slots.find(slot => slot.slotName === 'Dish2');
-                                this.SecondDish = aux.value.value;
-
-
-                                flow.continue('AccorInnovationCenter:Dessert', (msg, flow) => {
-                                    console.log(JSON.stringify(msg))
-
-                                    const aux = msg.slots.find(slot => slot.slotName === 'Dessert');
-                                    this.Dessert = aux.value.value;
-
-                                    flow.continue('AccorInnovationCenter:Yes ', (msg, flow) => {
-                                        console.log(JSON.stringify(msg))
-
-                                        const aux = msg.slots.find(slot => slot.slotName === 'Dessert');
-                                        this.Dessert = aux.value.value;
-
-
-                                        // End the session
-                                        flow.end();
-
-                                        return "Très bien, votre commande arrivera dans 20 minutes"
-
-                                    });
-                                    flow.continue('AccorInnovationCenter:None ', (msg, flow) => {
-                                        console.log(JSON.stringify(msg))
-
-                                        const aux = msg.slots.find(slot => slot.slotName === 'Dessert');
-                                        this.Dessert = aux.value.value;
-
-
-                                        // End the session
-                                        flow.end();
-
-                                        return "Ok, j'annule tout. N'hésitez pas à me redemander."
-
-                                    });
-
-                                    var resume = "";
-                                    if (FirstDish !== "None") resume += "en entrée " + FirstDish + ", ";
-                                    if (SecondDish !== "None") resume += "en plat principal " + SecondDish + ", ";
-                                    if (Dessert !== "None") resume += "et en dessert " + Dessert + ". ";
-
-                                    if (Dessert !== "None") {
-                                        return msg.slots[0].value.value + " est une spécialité de la maison. On a " + resume + "Ceci est correct?";
-
-                                    } else {
-                                        return "On a " + resume + "Ceci est correct?";
-
-                                    }
-
-                                });
-
-                                return msg.slots[0].value.value + ", parfait. Et quel dessert souhaitez-vous déguster?"
-
-                            });
-
-                            return msg.slots[0].value.value + ", excellent choix. Quel sera votre plat principal?"
-
-                        });
-
-
-
-
-
+                        sayTTS("Que désirez-vous comme entrée?", "fr")
                     }, 5000);
                 });
 
 
             });
+            */
+
+        setTimeout(() => {
+            return "Que desirz-vous comme entrée?";
+        }, 5000);
 
     })
 })
