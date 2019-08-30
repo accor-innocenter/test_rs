@@ -83,7 +83,7 @@ function sayTTSawait(msg, lang) {
 
 }
 
-withHermes(hermes => {
+await withHermes(hermes => {
     // Instantiate a dialog object
     const dialog = hermes.dialog()
 
