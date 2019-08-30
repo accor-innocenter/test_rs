@@ -167,10 +167,10 @@ withHermes(async hermes => {
 
 
 
-        await sayTTS("Voici le menu sur l'écran");
+        await sayTTS("Voici le menu sur l'écran", "fr").then().catch();
 
 
-        await myWait(5);
+        await myWait(5).then().catch();
 
         return "Que desirz-vous comme entrée?";
 
