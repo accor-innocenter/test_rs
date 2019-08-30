@@ -45,7 +45,7 @@ function sayTTS(msg, lang) {
             sayClient.on('message', function(topic, message) {
                 console.log(topic);
                 console.log(message);
-                finished.unsubscribe();
+                sayClient.unsubscribe('hermes/tts/sayFinished');
                 resolve(message);
             });
             setTimeout(() => {
