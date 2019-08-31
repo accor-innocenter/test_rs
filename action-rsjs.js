@@ -106,11 +106,11 @@ function listenIntent(intent) {
         var catchIntents = client.subscribe('hermes/intent/'+intent);
         client.on('message', (topic, message) => {
             console.log(topic);
-            console.log(message);
+            console.log(message.toJSON());
             client.unsubscribe('hermes/intent/#');
             resolve({
                 "topic": topic,
-                "message": message
+                "message": message.toJSON()
             });
         });
 
