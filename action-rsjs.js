@@ -255,6 +255,8 @@ withHermes(async hermes => {
         });
 
         await myWait(5).then().catch();
+
+        flow.end();
         
         return "Que desirez-vous comme entrée?";
 
