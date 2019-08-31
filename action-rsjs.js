@@ -208,6 +208,9 @@ withHermes(async hermes => {
             });
             */
 
+
+/*
+
         //SHOW MENU ON SCREEN
         castTV('/domotics/menu');
 
@@ -226,6 +229,17 @@ withHermes(async hermes => {
 
         await myWait(5).then().catch();
 
+
+        dialog.publish('start_session', {
+            siteId: "default",
+            init: {
+                // An enumeration, either 'action' or 'notification'
+                type: Enums.initType.action,
+                text: "Que souhaitez-vous comme entrée?",
+                canBeEnqueued: true,
+            }
+        })
+*/
         return "Que desirez-vous comme entrée?";
 
 
