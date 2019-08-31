@@ -133,6 +133,8 @@ withHermes(async hermes => {
     const dialog = hermes.dialog()
 
     listenIntent('AccorInnovationCenter:Exit').then(async (data)=> {
+        console.log("Exit");
+        process.exit();
         throw new Error();
     });
 
