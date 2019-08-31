@@ -78,11 +78,15 @@ function listenIntent(intent) {
 
     return new Promise((resolve) => {
 
-        var catchIntents = client.subscribe('hermes/intent/'+intent);
+        const mqtt_aux = require('mqtt');
+        const client_aux = mqtt_aux.connect('mqtt://localhost:1883');
+
+        client_aux.subscribe('hermes/intent/'+intent);
         client.on('message', (topic, message) => {
             console.log(topic);
             console.log(JSON.parse(message.toString()));
-            client.unsubscribe('hermes/intent/#');
+            client_aux.unsubscribe('hermes/intent/#');
+
             resolve({
                 "topic": topic,
                 "message": JSON.parse(message.toString())
