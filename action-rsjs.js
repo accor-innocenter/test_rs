@@ -78,6 +78,8 @@ function actionTTS(msg,lang) {
 
     return new Promise((resolve) => {
 
+        console.log("actionTTS launched");
+
         var actClient = client;
 
         actClient.publish('hermes/dialogueManager/startSession', JSON.stringify({
@@ -88,6 +90,8 @@ function actionTTS(msg,lang) {
                 }
             }));
 
+        console.log("publish sent");
+        
         actClient.end();
 
         listenIntent('#').then((data)=>{
