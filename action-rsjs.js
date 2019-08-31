@@ -134,7 +134,7 @@ withHermes(async hermes => {
 
     listenIntent('AccorInnovationCenter:Exit').then(async (data)=> {
         //process.exit()
-
+        console.log("exit now");
         throw new Error();
     });
 
