@@ -258,14 +258,17 @@ withHermes(async hermes => {
 
             if (data.topic==="hermes/intent/AccorInnovationCenter:FirstCourse") {
                 FirstDish=data.message.slots[0].value.value;
-                acknowledgement = FirstDish + ", un excellent choix.";
+                acknowledgement = FirstDish + ", un excellent choix... ";
             }
             else if (data.topic==="hermes/intent/AccorInnovationCenter:None") {
                 FirstDish="";
-                acknowledgement = "Très bien."
+                acknowledgement = "Très bien... "
             }
 
-            await actionTTS(acknowledgement+"Quel sera votre plat principal?", "fr")
+            await sayTTS(acknowledgement, "fr").then().catch();
+            await myWait(1).then().catch();
+
+            await actionTTS("Quel sera votre plat principal?", "fr")
             .catch()
             .then(async (data)=>{
 
@@ -282,15 +285,49 @@ withHermes(async hermes => {
                     acknowledgement = "Pas de plat principal? Ok."
                 }
 
-                var result = "En résumé, on a: ";
+                await sayTTS(acknowledgement, "fr").then().catch();
+                await myWait(1).then().catch();
+
+
+
+                await actionTTS("Et finallement comme dessert?", "fr")
+                .catch()
+                .then(async (data)=>{
+
+                    //console.log(data);
+
+                    var acknowledgement = "";
+
+                    if (data.topic==="hermes/intent/AccorInnovationCenter:Dessert") {
+                        SecondDish=data.message.slots[0].value.value;
+                        acknowledgement = FirstDish + ", excellent.";
+                    }
+                    else if (data.topic==="hermes/intent/AccorInnovationCenter:None") {
+                        SecondDish="";
+                        acknowledgement = "Pas de dessert."
+                    }
+
+                    await sayTTS(acknowledgement, "fr").then().catch();
+                    await myWait(1).then().catch();
+
+                });
+
+
+
+
+                var result = "En résumé, on a...";
                 if (FirstDish!=="") {
-                    result += FirstDish + " en entrée,"
+                    result += FirstDish + " en entrée."
                 }
                 if (SecondDish!=="") {
-                    result += "comme plat principal " + SecondDish + ","
+                    result += "comme plat principal " + SecondDish + "."
+                }
+                if (Dessert!=="") {
+                    result += "et finalement " + Dessert + " pour dessert."
                 }
 
-                await sayTTS(result, "fr");
+                await sayTTS(result, "fr").then().catch();
+                await myWait(1).then().catch();
 
                 await actionTTS("C'est correct?", "fr")
                 .catch()
