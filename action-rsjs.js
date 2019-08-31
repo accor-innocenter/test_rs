@@ -5,6 +5,8 @@ const { withHermes } = require('hermes-javascript');
 const fetch = require("node-fetch");
 //const mqtt = require('mqtt');
 //const client = mqtt.connect('mqtt://localhost:1883');
+var pico = require('picotts');
+
 const { Enums } = require('hermes-javascript/types')
 
 
@@ -15,6 +17,8 @@ const server = "http://192.168.86.76:1880";
 var FirstDish = "";
 var SecondDish = "";
 var Dessert = "";
+
+var mySession = "";
 
 
 function sayTTS(msg, lang) {
@@ -121,7 +125,8 @@ withHermes(async hermes => {
     dialog.flow('AccorInnovationCenter:OrderRS', async(msg, flow) => {
         // Log intent message
         console.log(JSON.stringify(msg))
-
+        
+        mySession = msg.sessionId;
 
         flow.continue('AccorInnovationCenter:FirstCourse', (msg, flow) => {
             console.log(JSON.stringify(msg));
@@ -183,6 +188,9 @@ withHermes(async hermes => {
 
             });
 
+
+            flow.end();
+
             return msg.slots[0].value.value + ", excellent choix. Quel sera votre plat principal?"
 
         });
@@ -240,6 +248,14 @@ withHermes(async hermes => {
             }
         })
 */
+
+        await pico.say('Hey this is cool', 'en-US', async function(err) {
+            if (!err)
+                console.log('Correctly played')
+        });
+
+        await myWait(5).then().catch();
+        
         return "Que desirez-vous comme entrée?";
 
 
