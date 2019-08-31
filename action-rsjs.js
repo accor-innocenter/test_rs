@@ -19,7 +19,7 @@ var Dessert = "";
 
 var mySession = "";
 
-
+//MAKE SNIPS SAY SOMETHING (WITHOUT USER FEEDBACK)
 function sayTTS(msg, lang) {
 
     return new Promise((resolve) => {
@@ -45,33 +45,7 @@ function sayTTS(msg, lang) {
 
 }
 
-function notificationTTS(msg, lang) {
-
-    return new Promise((resolve) => {
-
-        var sayClient = client;
-
-        sayClient.publish('hermes/dialogueManager/startSession', JSON.stringify({
-            "init": 
-                {
-                    "type": "notification",
-                    "text": msg
-                }
-            }));
-
-        var finished = sayClient.subscribe('hermes/tts/sayFinished');
-        sayClient.on('message', (topic, message) => {
-            console.log(topic);
-            console.log(message);
-            sayClient.unsubscribe('hermes/tts/sayFinished');
-            resolve(message);
-        });
-
-
-    });
-
-}
-
+//MAKE SNIPS ASK A QUESTION AND LISTEN TO USER FEEDBACK
 function actionTTS(msg,lang) {
 
     return new Promise((resolve) => {
@@ -99,6 +73,7 @@ function actionTTS(msg,lang) {
 
 }
 
+//LISTEN & CATCH INTENTS IN PROMISE
 function listenIntent(intent) {
 
     return new Promise((resolve) => {
@@ -118,6 +93,7 @@ function listenIntent(intent) {
     });
 }
 
+//SIMPLE WAIT FUNCTION ENCAPSULATED IN PROMISE
 function myWait(timeSec) {
 
     return new Promise((resolve) => {
@@ -131,10 +107,11 @@ function myWait(timeSec) {
 
 }
 
-function castTV(webreq){
+//LAUNCH WEB REQUEST TO NODE-RED SERVER
+function webRequest(webreq){
 
     return new Promise((resolve,reject) => {
-        const fetchPromise = fetch(server + "domotics/menu");
+        const fetchPromise = fetch(server + webreq);
         
         fetchPromise.then(response => {
             //console.log("@@@@@@@@@@@@@@@@@@@@@@@");
@@ -155,94 +132,13 @@ withHermes(async hermes => {
     // Instantiate a dialog object
     const dialog = hermes.dialog()
 
-    /*
-    // Subscribes to intent 'myIntent'
-    dialog.flow('AccorInnovationCenter:OrderRS', async(msg, flow) => {
-        // Log intent message
-        console.log(JSON.stringify(msg))
-        
-        mySession = msg.sessionId;
-
-        flow.continue('AccorInnovationCenter:FirstCourse', (msg, flow) => {
-            console.log(JSON.stringify(msg));
-
-            this.FirstDish = msg.slots[0].value.value;
-            console.log("first: " + FirstDish);
-
-            flow.continue('AccorInnovationCenter:SecondCourse', (msg, flow) => {
-                console.log(JSON.stringify(msg))
-
-                this.SecondDish = msg.slots[0].value.value;
-                console.log("second: " + SecondDish);
-
-                flow.continue('AccorInnovationCenter:Dessert', (msg, flow) => {
-                    console.log(JSON.stringify(msg))
-
-                    this.Dessert = msg.slots[0].value.value
-                    console.log("dessert: " + Dessert);
-
-                    flow.continue('AccorInnovationCenter:Yes ', (msg, flow) => {
-                        console.log(JSON.stringify(msg))
-
-                        // End the session
-                        flow.end();
-
-                        return "Très bien, votre commande arrivera dans 20 minutes"
-
-                    });
-                    flow.continue('AccorInnovationCenter:None ', (msg, flow) => {
-                        console.log(JSON.stringify(msg))
-
-                        const aux = msg.slots.find(slot => slot.slotName === 'Dessert');
-                        this.Dessert = aux.value.value;
-
-
-                        // End the session
-                        flow.end();
-
-                        return "Ok, j'annule tout. N'hésitez pas à me redemander."
-
-                    });
-
-                    var resume = "";
-                    if (FirstDish !== "None") resume += "en entrée " + FirstDish + ", ";
-                    if (SecondDish !== "None") resume += "en plat principal " + SecondDish + ", ";
-                    if (Dessert !== "None") resume += "et en dessert " + Dessert + ". ";
-
-                    if (Dessert !== "None") {
-                        return msg.slots[0].value.value + " est une spécialité de la maison. On a " + resume + "Ceci est correct?";
-
-                    } else {
-                        return "On a " + resume + "Ceci est correct?";
-
-                    }
-
-                });
-
-                return msg.slots[0].value.value + ", parfait. Et quel dessert souhaitez-vous déguster?"
-
-            });
-
-
-            flow.end();
-
-            return msg.slots[0].value.value + ", excellent choix. Quel sera votre plat principal?"
-
-        });
-
-        await myWait(5).then().catch();
-
-        //return "Que desirez-vous comme entrée?";
-
-    })
-    */
-
     listenIntent('AccorInnovationCenter:Exit').then(async (data)=> {
         throw new Error();
     });
 
     listenIntent('AccorInnovationCenter:OrderRS').then(async (data)=> {
 
+        webRequest('/domotics/menu');
         await sayTTS("Voici le menu.","fr").then().catch();
 
         await myWait(5).then().catch();
