@@ -3,7 +3,6 @@
 
 const { withHermes } = require('hermes-javascript');
 const fetch = require("node-fetch");
-
 const mqtt = require('mqtt');
 const client = mqtt.connect('mqtt://localhost:1883');
 
@@ -79,14 +78,11 @@ function listenIntent(intent) {
 
     return new Promise((resolve) => {
 
-        const client_aux = client;
-
-        client_aux.subscribe('hermes/intent/'+intent);
+        var catchIntents = client.subscribe('hermes/intent/'+intent);
         client.on('message', (topic, message) => {
             console.log(topic);
             console.log(JSON.parse(message.toString()));
-            client_aux.unsubscribe('hermes/intent/#');
-
+            client.unsubscribe('hermes/intent/#');
             resolve({
                 "topic": topic,
                 "message": JSON.parse(message.toString())
@@ -136,13 +132,11 @@ withHermes(async hermes => {
     // Instantiate a dialog object
     const dialog = hermes.dialog()
 
-    /*
     listenIntent('AccorInnovationCenter:Exit').then(async (data)=> {
-        console.log("Exit");
-        process.exit();
+        //process.exit()
+
         throw new Error();
     });
-    */
 
     listenIntent('AccorInnovationCenter:OrderRS').then(async (data)=> {
 
