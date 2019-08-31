@@ -20,7 +20,7 @@ var Dessert = "";
 var mySession = "";
 
 
-function sayTTS(msg, lang, session) {
+function sayTTS(msg, lang) {
 
     return new Promise((resolve) => {
 
@@ -33,8 +33,7 @@ function sayTTS(msg, lang, session) {
         sayClient.publish('hermes/tts/say', JSON.stringify({
             "text": msg,
             "lang": lang,
-            "siteId": "default",
-            "sessionId": session
+            "siteId": "default"
         }));
 
         var finished = sayClient.subscribe('hermes/tts/sayFinished');
@@ -83,6 +82,63 @@ function notificationTTS(msg, lang) {
 
 }
 
+function actionTTS(msg, lang, intents) {
+
+    return new Promise((resolve) => {
+
+        var mqtt = require('mqtt');
+
+        console.log("sayTTS called");
+
+        var sayClient = mqtt.connect('mqtt://localhost:1883');
+
+        sayClient.publish('hermes/dialogueManager/startSession', JSON.stringify({
+            "init": 
+                {
+                    "type": "action",
+                    "text": msg,
+                    "canBeEnqueued": true,
+                    "intentFilter": intents
+                }
+            }));
+
+        sayClient.end();
+
+        listenIntent('#').then((data)=>{
+            resolve(data);
+        })
+
+
+    });
+
+}
+
+function listenIntent(intent) {
+
+    return new Promise((resolve) => {
+
+        var mqtt = require('mqtt');
+
+        console.log("listen intent called");
+
+        var client = mqtt.connect('mqtt://localhost:1883');
+
+        var catchIntents = client.subscribe('hermes/intent/'+intent);
+        client.on('message', (topic, message) => {
+            console.log(topic);
+            console.log(message);
+            client.unsubscribe('hermes/intent/#');
+            client.end();
+            resolve({
+                "topic": topic,
+                "message": message
+            });
+        });
+
+
+    });
+}
+
 function myWait(timeSec) {
 
     return new Promise((resolve) => {
@@ -120,7 +176,7 @@ withHermes(async hermes => {
     // Instantiate a dialog object
     const dialog = hermes.dialog()
 
-
+    /*
     // Subscribes to intent 'myIntent'
     dialog.flow('AccorInnovationCenter:OrderRS', async(msg, flow) => {
         // Log intent message
@@ -195,73 +251,93 @@ withHermes(async hermes => {
 
         });
 
+        await myWait(5).then().catch();
 
-        // Use text to speech
-        /*
-        sayTTS("Voici le menu sur l'écran.", "fr")
-            .then((data) => {
-                console.log("C'est bon: " + data);
+        //return "Que desirez-vous comme entrée?";
 
-                //SHOW MENU ON SCREEN
-                const fetchPromise = fetch(server + "domotics/menu");
-                fetchPromise.then(response => {
+    })
+    */
 
-                }).then(data => {
-                    setTimeout(() => {
-                        sayTTS("Que désirez-vous comme entrée?", "fr")
-                    }, 5000);
+    listenIntent('AccorInnovationCenter:OrderRS').then(async (data)=> {
+
+        sayTTS("Voici le menu.","fr");
+
+        actionTTS("Quelle entrée souhaitez-vous?", "fr", ['AccorInnovationCenter:FirstCourse','AccorInnovationCenter:None'])
+        .then((data)=>{
+
+            var acknowledgement = "";
+
+            if (data.topic==="hermes/intent/AccorInnovationCenter:FirstCourse") {
+                FirstDish=data.message.slot[0].value.value;
+                acknowledgement = FirstDish + ", un excellent choix.";
+            }
+            else if (data.topic==="hermes/intent/AccorInnovationCenter:None") {
+                FirstDish="";
+                acknowledgement = "Très bien."
+            }
+
+            actionTTS(acknowledgement+"Quel sera votre plat principal?", "fr", ['AccorInnovationCenter:SecondCourse','AccorInnovationCenter:None'])
+            .then(async (data)=>{
+
+                var acknowledgement = "";
+
+                if (data.topic==="hermes/intent/AccorInnovationCenter:SecondCourse") {
+                    SecondDish=data.message.slot[0].value.value;
+                    acknowledgement = FirstDish + " c'est une spécialité de la maison.";
+                }
+                else if (data.topic==="hermes/intent/AccorInnovationCenter:None") {
+                    SecondDish="";
+                    acknowledgement = "Pas de plat principal? Ok."
+                }
+
+                var result = "En résumé, on a: ";
+                if (FirstDish!=="") {
+                    result += FirstDish + " en entrée,"
+                }
+                if (SecondDish!=="") {
+                    result += "comme plat principal " + SecondDish + ","
+                }
+
+                await sayTTS(result, "fr");
+
+                actionTTS("C'est correct?", "fr", ['AccorInnovationCenter:Yes','AccorInnovationCenter:None'])
+                .then(async (data)=>{
+                    if (data.topic==="hermes/intent/AccorInnovationCenter:Yes") {
+                        
+                        await sayTTS("Parfait, votre commande arrivera dans 20 minutes. Bonne dégustation!", "fr");
+                        
+                    }
+                    else if (data.topic==="hermes/intent/AccorInnovationCenter:None") {
+                        
+                        await sayTTS("Ok, on annule. N'hésitez pas à refaire une demande.", "fr");
+
+                    }
+
                 });
 
 
             });
-            */
 
 
-/*
 
-        //SHOW MENU ON SCREEN
-        castTV('/domotics/menu');
-
-        dialog.publish('start_session', {
-            siteId: "default",
-            init: {
-                type: Enums.initType.notification,
-                text: "Ceci est un test avec dialogue"
-            }
         });
 
-        await myWait(5).then().catch();
-
-        await notificationTTS("Voici le menu sur l'écran").then().catch();
 
 
-        await myWait(5).then().catch();
 
 
-        dialog.publish('start_session', {
-            siteId: "default",
-            init: {
-                // An enumeration, either 'action' or 'notification'
-                type: Enums.initType.action,
-                text: "Que souhaitez-vous comme entrée?",
-                canBeEnqueued: true,
-            }
-        })
-*/
 
-        await sayTTS("ceci est un test", "fr", mySession);
 
-        await myWait(5).then().catch();
-        
 
-        dialog.publish('continue_session', {
-            sessionId: mySession,
-            text: "Que souhaitez-vous comme entrée?",
-            intentFilter: ['AccorInnovationCenter:FirstCourse'],
-        });
 
-        //return "Que desirez-vous comme entrée?";
+
+
+
+
 
 
     })
+
+
+
 })
