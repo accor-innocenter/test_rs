@@ -241,7 +241,7 @@ withHermes(async hermes => {
 
         await sayTTS("Voici le menu.","fr").then().catch();
 
-        await myWait(10).then().catch();
+        await myWait(5).then().catch();
 
         await actionTTS("Quelle entrée souhaitez-vous?", "fr")
         .then((data)=>{
@@ -249,7 +249,7 @@ withHermes(async hermes => {
             var acknowledgement = "";
 
             if (data.topic==="hermes/intent/AccorInnovationCenter:FirstCourse") {
-                FirstDish=data.message.slot[0].value.value;
+                FirstDish=data.message.slots[0].value.value;
                 acknowledgement = FirstDish + ", un excellent choix.";
             }
             else if (data.topic==="hermes/intent/AccorInnovationCenter:None") {
@@ -263,7 +263,7 @@ withHermes(async hermes => {
                 var acknowledgement = "";
 
                 if (data.topic==="hermes/intent/AccorInnovationCenter:SecondCourse") {
-                    SecondDish=data.message.slot[0].value.value;
+                    SecondDish=data.message.slots[0].value.value;
                     acknowledgement = FirstDish + " c'est une spécialité de la maison.";
                 }
                 else if (data.topic==="hermes/intent/AccorInnovationCenter:None") {
