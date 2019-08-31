@@ -82,7 +82,7 @@ function notificationTTS(msg, lang) {
 
 }
 
-function actionTTS(msg, lang, intents) {
+function actionTTS(msg,lang) {
 
     return new Promise((resolve) => {
 
@@ -97,8 +97,7 @@ function actionTTS(msg, lang, intents) {
                 {
                     "type": "action",
                     "text": msg,
-                    "canBeEnqueued": true,
-                    "intentFilter": intents
+                    "canBeEnqueued": true
                 }
             }));
 
@@ -262,8 +261,9 @@ withHermes(async hermes => {
 
         await sayTTS("Voici le menu.","fr");
 
+        await myWait(5).then().catch();
 
-        actionTTS("Quelle entrée souhaitez-vous?", "fr", ['AccorInnovationCenter:FirstCourse','AccorInnovationCenter:None'])
+        await actionTTS("Quelle entrée souhaitez-vous?", "fr")
         .then((data)=>{
 
             var acknowledgement = "";
@@ -277,7 +277,7 @@ withHermes(async hermes => {
                 acknowledgement = "Très bien."
             }
 
-            actionTTS(acknowledgement+"Quel sera votre plat principal?", "fr", ['AccorInnovationCenter:SecondCourse','AccorInnovationCenter:None'])
+            actionTTS(acknowledgement+"Quel sera votre plat principal?", "fr")
             .then(async (data)=>{
 
                 var acknowledgement = "";
@@ -301,7 +301,7 @@ withHermes(async hermes => {
 
                 await sayTTS(result, "fr");
 
-                actionTTS("C'est correct?", "fr", ['AccorInnovationCenter:Yes','AccorInnovationCenter:None'])
+                actionTTS("C'est correct?", "fr")
                 .then(async (data)=>{
                     if (data.topic==="hermes/intent/AccorInnovationCenter:Yes") {
                         
