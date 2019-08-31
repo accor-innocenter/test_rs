@@ -82,7 +82,7 @@ function listenIntent(intent) {
         client.on('message', (topic, message) => {
             console.log(topic);
             console.log(JSON.parse(message.toString()));
-            client.unsubscribe('hermes/intent/#');
+            client.unsubscribe('hermes/intent/'+intent);
             resolve({
                 "topic": topic,
                 "message": JSON.parse(message.toString())
@@ -136,11 +136,14 @@ withHermes(async hermes => {
     client.subscribe('hermes/intent/AccorInnovationCenter:Exit');
         client.on('message', async (topic, message) => {
 
-            await sayTTS("Ok, on annule tout.","fr").then().catch();
+            if (data.topic==="hermes/intent/AccorInnovationCenter:Exit") {
+                await sayTTS("Ok, on annule tout.","fr").then().catch();
 
-            process.exit()
-            console.log("exit now");
-            throw new Error();
+                process.exit()
+                console.log("exit now");
+                throw new Error();
+            }
+            
         });
 
 
