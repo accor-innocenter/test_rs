@@ -5,7 +5,6 @@ const { withHermes } = require('hermes-javascript');
 const fetch = require("node-fetch");
 //const mqtt = require('mqtt');
 //const client = mqtt.connect('mqtt://localhost:1883');
-var pico = require('picotts');
 
 const { Enums } = require('hermes-javascript/types')
 
@@ -249,16 +248,18 @@ withHermes(async hermes => {
         })
 */
 
-        await pico.say('Hey this is cool', 'en-US', async function(err) {
-            if (!err)
-                console.log('Correctly played')
-        });
+        await sayTTS("ceci est un trest","fr");
 
         await myWait(5).then().catch();
-
-        flow.end();
         
-        return "Que desirez-vous comme entrée?";
+
+        dialog.publish('continue_session', {
+            sessionId: mySession,
+            text: "Que souhaitez-vous comme entrée?",
+            intentFilter: ['AccorInnovationCenter:FirstCourse'],
+        });
+
+        //return "Que desirez-vous comme entrée?";
 
 
     })
