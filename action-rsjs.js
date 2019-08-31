@@ -132,14 +132,17 @@ withHermes(async hermes => {
     // Instantiate a dialog object
     const dialog = hermes.dialog()
 
-    listenIntent('AccorInnovationCenter:Exit').then(async (data)=> {
-        if (data.topic==="hermes/intent/AccorInnovationCenter:Exit") {
+
+    client.subscribe('hermes/intent/AccorInnovationCenter:Exit');
+        client.on('message', async (topic, message) => {
+
+            await sayTTS("Ok, on annule tout.","fr").then().catch();
+
             process.exit()
             console.log("exit now");
             throw new Error();
-        }
-        
-    });
+        });
+
 
     listenIntent('AccorInnovationCenter:OrderRS').then(async (data)=> {
 
