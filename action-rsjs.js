@@ -133,9 +133,12 @@ withHermes(async hermes => {
     const dialog = hermes.dialog()
 
     listenIntent('AccorInnovationCenter:Exit').then(async (data)=> {
-        process.exit()
-        console.log("exit now");
-        throw new Error();
+        if (data.topic==="hermes/intent/AccorInnovationCenter:Exit") {
+            process.exit()
+            console.log("exit now");
+            throw new Error();
+        }
+        
     });
 
     listenIntent('AccorInnovationCenter:OrderRS').then(async (data)=> {
