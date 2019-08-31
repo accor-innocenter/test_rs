@@ -237,6 +237,10 @@ withHermes(async hermes => {
     })
     */
 
+    listenIntent('AccorInnovationCenter:Exit').then(async (data)=> {
+        throw new Error();
+    });
+
     listenIntent('AccorInnovationCenter:OrderRS').then(async (data)=> {
 
         await sayTTS("Voici le menu.","fr").then().catch();
@@ -247,8 +251,8 @@ withHermes(async hermes => {
         .catch()
         .then(async (data)=>{
 
-            console.log("@@@@@@@@@@@@@@@@@@@@@@@@@@@");
-            console.log(data);
+            //console.log("@@@@@@@@@@@@@@@@@@@@@@@@@@@");
+            //console.log(data);
 
             var acknowledgement = "";
 
@@ -261,11 +265,11 @@ withHermes(async hermes => {
                 acknowledgement = "Très bien."
             }
 
-            actionTTS(acknowledgement+"Quel sera votre plat principal?", "fr")
+            await actionTTS(acknowledgement+"Quel sera votre plat principal?", "fr")
             .catch()
             .then(async (data)=>{
 
-                console.log(data);
+                //console.log(data);
 
                 var acknowledgement = "";
 
@@ -288,11 +292,11 @@ withHermes(async hermes => {
 
                 await sayTTS(result, "fr");
 
-                actionTTS("C'est correct?", "fr")
+                await actionTTS("C'est correct?", "fr")
                 .catch()
                 .then(async (data)=>{
 
-                    console.log(data);
+                    //console.log(data);
 
                     if (data.topic==="hermes/intent/AccorInnovationCenter:Yes") {
                         
