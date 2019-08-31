@@ -244,7 +244,10 @@ withHermes(async hermes => {
         await myWait(5).then().catch();
 
         await actionTTS("Quelle entrée souhaitez-vous?", "fr")
+        .catch()
         .then((data)=>{
+
+            console.log(data);
 
             var acknowledgement = "";
 
@@ -258,7 +261,10 @@ withHermes(async hermes => {
             }
 
             actionTTS(acknowledgement+"Quel sera votre plat principal?", "fr")
+            .catch()
             .then(async (data)=>{
+
+                console.log(data);
 
                 var acknowledgement = "";
 
@@ -282,7 +288,11 @@ withHermes(async hermes => {
                 await sayTTS(result, "fr");
 
                 actionTTS("C'est correct?", "fr")
+                .catch()
                 .then(async (data)=>{
+
+                    console.log(data);
+
                     if (data.topic==="hermes/intent/AccorInnovationCenter:Yes") {
                         
                         await sayTTS("Parfait, votre commande arrivera dans 20 minutes. Bonne dégustation!", "fr");
