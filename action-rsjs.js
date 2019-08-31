@@ -45,6 +45,38 @@ function sayTTS(msg, lang) {
 
 }
 
+function notificationTTS(msg, lang) {
+
+    return new Promise((resolve) => {
+
+        var mqtt = require('mqtt');
+
+        console.log("sayTTS called");
+
+        var sayClient = mqtt.connect('mqtt://localhost:1883');
+
+        sayClient.publish('hermes/dialogueManager/startSession', JSON.stringify({
+            "init": 
+                {
+                    "type": "notification",
+                    "text": msg
+                }
+            }));
+
+        var finished = sayClient.subscribe('hermes/tts/sayFinished');
+        sayClient.on('message', (topic, message) => {
+            console.log(topic);
+            console.log(message);
+            sayClient.unsubscribe('hermes/tts/sayFinished');
+            sayClient.end();
+            resolve(message);
+        });
+
+
+    });
+
+}
+
 function myWait(timeSec) {
 
     return new Promise((resolve) => {
@@ -163,16 +195,16 @@ withHermes(async hermes => {
         }).then(data => {
             //console.log("@@@@@@@@@@@@@@@@@@@@@@@");
             //console.log(data);
-        });
+        }).catch();
 
 
 
-        await sayTTS("Voici le menu sur l'écran", "fr").then().catch();
+        await notificationTTS("Voici le menu sur l'écran").then().catch();
 
 
         await myWait(5).then().catch();
 
-        return "Que desirz-vous comme entrée?";
+        return "Que desirez-vous comme entrée?";
 
 
     })
