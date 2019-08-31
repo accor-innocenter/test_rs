@@ -78,8 +78,7 @@ function listenIntent(intent) {
 
     return new Promise((resolve) => {
 
-        const mqtt_aux = require('mqtt');
-        const client_aux = mqtt_aux.connect('mqtt://localhost:1883');
+        const client_aux = mqtt.connect('mqtt://localhost:1883');
 
         client_aux.subscribe('hermes/intent/'+intent);
         client.on('message', (topic, message) => {
