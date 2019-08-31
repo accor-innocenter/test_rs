@@ -127,11 +127,11 @@ function webRequest(webreq){
     });
 }
 
-function myExit(topic){
+async function myExit(topic){
     if (topic==="hermes/intent/AccorInnovationCenter:Exit") {
         await sayTTS("Ok, on annule tout.","fr").then().catch();
 
-        process.exit()
+        //process.exit()
         console.log("exit now");
         throw new Error();
     }
