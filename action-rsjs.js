@@ -3,6 +3,7 @@
 
 const { withHermes } = require('hermes-javascript');
 const fetch = require("node-fetch");
+
 const mqtt = require('mqtt');
 const client = mqtt.connect('mqtt://localhost:1883');
 
@@ -78,7 +79,7 @@ function listenIntent(intent) {
 
     return new Promise((resolve) => {
 
-        const client_aux = mqtt.connect('mqtt://localhost:1883');
+        const client_aux = client;
 
         client_aux.subscribe('hermes/intent/'+intent);
         client.on('message', (topic, message) => {
