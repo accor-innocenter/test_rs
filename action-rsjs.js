@@ -5,9 +5,11 @@ const { withHermes } = require('hermes-javascript');
 const fetch = require("node-fetch");
 //const mqtt = require('mqtt');
 //const client = mqtt.connect('mqtt://localhost:1883');
+const { Enums } = require('hermes-javascript/types')
+
 
 //Server adress
-const server = "http://192.168.86.76:1880/";
+const server = "http://192.168.86.76:1880";
 
 //Variables for the dishes
 var FirstDish = "";
@@ -88,6 +90,25 @@ function myWait(timeSec) {
 
     });
 
+}
+
+function castTV(webreq){
+
+    return new Promise((resolve,reject) => {
+        const fetchPromise = fetch(server + "domotics/menu");
+        
+        fetchPromise.then(response => {
+            //console.log("@@@@@@@@@@@@@@@@@@@@@@@");
+            //console.log(response);
+        }).then(data => {
+            //console.log("@@@@@@@@@@@@@@@@@@@@@@@");
+            //console.log(data);
+            resolve(data);
+        }).catch((error)=>{
+            reject(error);
+        });
+
+    });
 }
 
 
@@ -188,16 +209,17 @@ withHermes(async hermes => {
             */
 
         //SHOW MENU ON SCREEN
-        const fetchPromise = fetch(server + "domotics/menu");
-        fetchPromise.then(response => {
-            //console.log("@@@@@@@@@@@@@@@@@@@@@@@");
-            //console.log(response);
-        }).then(data => {
-            //console.log("@@@@@@@@@@@@@@@@@@@@@@@");
-            //console.log(data);
-        }).catch();
+        castTV('/domotics/menu');
 
+        dialog.publish('start_session', {
+            siteId: "default",
+            init: {
+                type: Enums.initType.notification,
+                text: "Ceci est un test avec dialogue"
+            }
+        });
 
+        await myWait(5).then().catch();
 
         await notificationTTS("Voici le menu sur l'écran").then().catch();
 
