@@ -88,11 +88,11 @@ function actionTTS(msg, lang, intents) {
 
         var mqtt = require('mqtt');
 
-        console.log("sayTTS called");
+        console.log("actionTS called");
 
-        var sayClient = mqtt.connect('mqtt://localhost:1883');
+        var actClient = mqtt.connect('mqtt://localhost:1883');
 
-        sayClient.publish('hermes/dialogueManager/startSession', JSON.stringify({
+        actClient.publish('hermes/dialogueManager/startSession', JSON.stringify({
             "init": 
                 {
                     "type": "action",
@@ -102,7 +102,7 @@ function actionTTS(msg, lang, intents) {
                 }
             }));
 
-        sayClient.end();
+        actClient.end();
 
         listenIntent('#').then((data)=>{
             resolve(data);
@@ -260,7 +260,8 @@ withHermes(async hermes => {
 
     listenIntent('AccorInnovationCenter:OrderRS').then(async (data)=> {
 
-        sayTTS("Voici le menu.","fr");
+        await sayTTS("Voici le menu.","fr");
+
 
         actionTTS("Quelle entrée souhaitez-vous?", "fr", ['AccorInnovationCenter:FirstCourse','AccorInnovationCenter:None'])
         .then((data)=>{
