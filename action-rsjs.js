@@ -3,8 +3,8 @@
 
 const { withHermes } = require('hermes-javascript');
 const fetch = require("node-fetch");
-//const mqtt = require('mqtt');
-//const client = mqtt.connect('mqtt://localhost:1883');
+const mqtt = require('mqtt');
+const client = mqtt.connect('mqtt://localhost:1883');
 
 const { Enums } = require('hermes-javascript/types')
 
@@ -24,11 +24,7 @@ function sayTTS(msg, lang) {
 
     return new Promise((resolve) => {
 
-        var mqtt = require('mqtt');
-
-        console.log("sayTTS called");
-
-        var sayClient = mqtt.connect('mqtt://localhost:1883');
+        var sayClient = client;
 
         sayClient.publish('hermes/tts/say', JSON.stringify({
             "text": msg,
@@ -54,11 +50,7 @@ function notificationTTS(msg, lang) {
 
     return new Promise((resolve) => {
 
-        var mqtt = require('mqtt');
-
-        console.log("sayTTS called");
-
-        var sayClient = mqtt.connect('mqtt://localhost:1883');
+        var sayClient = client;
 
         sayClient.publish('hermes/dialogueManager/startSession', JSON.stringify({
             "init": 
@@ -86,18 +78,13 @@ function actionTTS(msg,lang) {
 
     return new Promise((resolve) => {
 
-        var mqtt = require('mqtt');
-
-        console.log("actionTS called");
-
-        var actClient = mqtt.connect('mqtt://localhost:1883');
+        var actClient = client;
 
         actClient.publish('hermes/dialogueManager/startSession', JSON.stringify({
             "init": 
                 {
                     "type": "action",
-                    "text": msg,
-                    "canBeEnqueued": true
+                    "text": msg
                 }
             }));
 
@@ -115,12 +102,6 @@ function actionTTS(msg,lang) {
 function listenIntent(intent) {
 
     return new Promise((resolve) => {
-
-        var mqtt = require('mqtt');
-
-        console.log("listen intent called");
-
-        var client = mqtt.connect('mqtt://localhost:1883');
 
         var catchIntents = client.subscribe('hermes/intent/'+intent);
         client.on('message', (topic, message) => {
@@ -259,9 +240,9 @@ withHermes(async hermes => {
 
     listenIntent('AccorInnovationCenter:OrderRS').then(async (data)=> {
 
-        await sayTTS("Voici le menu.","fr");
+        await sayTTS("Voici le menu.","fr").then().catch();
 
-        await myWait(5).then().catch();
+        await myWait(10).then().catch();
 
         await actionTTS("Quelle entrée souhaitez-vous?", "fr")
         .then((data)=>{
