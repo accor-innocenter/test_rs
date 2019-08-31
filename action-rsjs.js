@@ -82,7 +82,7 @@ function listenIntent(intent) {
         client.on('message', (topic, message) => {
             console.log(topic);
             console.log(JSON.parse(message.toString()));
-            client.unsubscribe('hermes/intent/'+intent);
+            //client.unsubscribe('hermes/intent/'+intent);
             resolve({
                 "topic": topic,
                 "message": JSON.parse(message.toString())
