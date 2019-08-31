@@ -278,7 +278,7 @@ withHermes(async hermes => {
 
                 if (data.topic==="hermes/intent/AccorInnovationCenter:SecondCourse") {
                     SecondDish=data.message.slots[0].value.value;
-                    acknowledgement = FirstDish + " c'est une spécialité de la maison.";
+                    acknowledgement = SecondDish + " c'est une spécialité de la maison.";
                 }
                 else if (data.topic==="hermes/intent/AccorInnovationCenter:None") {
                     SecondDish="";
@@ -299,11 +299,11 @@ withHermes(async hermes => {
                     var acknowledgement = "";
 
                     if (data.topic==="hermes/intent/AccorInnovationCenter:Dessert") {
-                        SecondDish=data.message.slots[0].value.value;
-                        acknowledgement = FirstDish + ", excellent.";
+                        Dessert=data.message.slots[0].value.value;
+                        acknowledgement = Dessert + ", excellent.";
                     }
                     else if (data.topic==="hermes/intent/AccorInnovationCenter:None") {
-                        SecondDish="";
+                        Dessert="";
                         acknowledgement = "Pas de dessert."
                     }
 
@@ -317,13 +317,24 @@ withHermes(async hermes => {
 
                 var result = "En résumé, on a...";
                 if (FirstDish!=="") {
-                    result += FirstDish + " en entrée."
+                    result += FirstDish + " en entrée, puis ";
                 }
+                else {
+                    result += " aucune entrée, ";
+                }
+
                 if (SecondDish!=="") {
-                    result += "comme plat principal " + SecondDish + "."
+                    result += "comme plat principal " + SecondDish + ", et "
                 }
+                else {
+                    result += " pas de plat principal, ";
+                }
+
                 if (Dessert!=="") {
-                    result += "et finalement " + Dessert + " pour dessert."
+                    result += "finalement " + Dessert + " pour dessert."
+                }
+                else {
+                    result += " aucun dessert. ";
                 }
 
                 await sayTTS(result, "fr").then().catch();
