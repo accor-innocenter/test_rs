@@ -20,7 +20,7 @@ var Dessert = "";
 var mySession = "";
 
 
-function sayTTS(msg, lang) {
+function sayTTS(msg, lang, session) {
 
     return new Promise((resolve) => {
 
@@ -33,7 +33,8 @@ function sayTTS(msg, lang) {
         sayClient.publish('hermes/tts/say', JSON.stringify({
             "text": msg,
             "lang": lang,
-            "siteId": "default"
+            "siteId": "default",
+            "sessionId": session
         }));
 
         var finished = sayClient.subscribe('hermes/tts/sayFinished');
@@ -248,7 +249,7 @@ withHermes(async hermes => {
         })
 */
 
-        await sayTTS("ceci est un trest","fr");
+        await sayTTS("ceci est un test", "fr", mySession);
 
         await myWait(5).then().catch();
         
