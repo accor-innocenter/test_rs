@@ -37,7 +37,6 @@ function sayTTS(msg, lang) {
             console.log(topic);
             console.log(message);
             sayClient.unsubscribe('hermes/tts/sayFinished');
-            sayClient.end();
             resolve(message);
         });
 
@@ -65,7 +64,6 @@ function notificationTTS(msg, lang) {
             console.log(topic);
             console.log(message);
             sayClient.unsubscribe('hermes/tts/sayFinished');
-            sayClient.end();
             resolve(message);
         });
 
@@ -91,8 +89,6 @@ function actionTTS(msg,lang) {
             }));
 
         console.log("publish sent");
-        
-        actClient.end();
 
         listenIntent('#').then((data)=>{
             resolve(data);
@@ -112,7 +108,6 @@ function listenIntent(intent) {
             console.log(topic);
             console.log(message);
             client.unsubscribe('hermes/intent/#');
-            client.end();
             resolve({
                 "topic": topic,
                 "message": message
