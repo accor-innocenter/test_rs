@@ -127,24 +127,19 @@ function webRequest(webreq){
     });
 }
 
+function myExit(topic){
+    if (topic==="hermes/intent/AccorInnovationCenter:Exit") {
+        await sayTTS("Ok, on annule tout.","fr").then().catch();
+
+        process.exit()
+        console.log("exit now");
+        throw new Error();
+    }
+}
 
 withHermes(async hermes => {
     // Instantiate a dialog object
-    const dialog = hermes.dialog()
-
-
-    client.subscribe('hermes/intent/AccorInnovationCenter:Exit');
-        client.on('message', async (topic, message) => {
-
-            if (data.topic==="hermes/intent/AccorInnovationCenter:Exit") {
-                await sayTTS("Ok, on annule tout.","fr").then().catch();
-
-                process.exit()
-                console.log("exit now");
-                throw new Error();
-            }
-            
-        });
+    const dialog = hermes.dialog();
 
 
     listenIntent('AccorInnovationCenter:OrderRS').then(async (data)=> {
@@ -171,6 +166,7 @@ withHermes(async hermes => {
                 FirstDish="";
                 acknowledgement = "Très bien... "
             }
+            myExit(data.topic);
 
             await sayTTS(acknowledgement, "fr").then().catch();
             await myWait(1).then().catch();
@@ -191,6 +187,7 @@ withHermes(async hermes => {
                     SecondDish="";
                     acknowledgement = "Pas de plat principal? Ok."
                 }
+                myExit(data.topic);
 
                 await sayTTS(acknowledgement, "fr").then().catch();
                 await myWait(1).then().catch();
@@ -213,6 +210,7 @@ withHermes(async hermes => {
                         Dessert="";
                         acknowledgement = "Pas de dessert."
                     }
+                    myExit(data.topic);
 
                     await sayTTS(acknowledgement, "fr").then().catch();
                     await myWait(1).then().catch();
