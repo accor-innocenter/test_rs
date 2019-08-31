@@ -140,13 +140,12 @@ function myExit(topic){
 }
 
 withHermes(async hermes => {
-    // Instantiate a dialog object
-    const dialog = hermes.dialog();
 
+    const dialog = hermes.dialog();
 
     listenIntent('AccorInnovationCenter:OrderRS').then(async (data)=> {
 
-        webRequest('/domotics/menu');
+        webRequest('/domotics/roomservice');
         await sayTTS("Voici le menu.","fr").then().catch();
 
         await myWait(5).then().catch();
@@ -266,29 +265,10 @@ withHermes(async hermes => {
 
                 });
 
-
             });
-
-
 
         });
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
     })
-
-
 
 })
