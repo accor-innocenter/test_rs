@@ -21,6 +21,9 @@ function start(nodefile) {
     proc.on('exit', function (code) {
         console.log('child process exited with code ' + code);
         delete(proc);
-        setTimeout(start(nodefile), 1000);
+        setTimeout(()=>{
+            console.log("child relaunched");
+            start(nodefile);
+        }, 1000);
     });
 }
