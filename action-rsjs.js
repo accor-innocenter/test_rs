@@ -255,11 +255,15 @@ withHermes(async hermes => {
                     if (data.topic==="hermes/intent/AccorInnovationCenter:Yes") {
                         
                         await sayTTS("Parfait, votre commande arrivera dans 20 minutes. Bonne dégustation!", "fr");
+                        process.exit()
+
                         
                     }
                     else if (data.topic==="hermes/intent/AccorInnovationCenter:None") {
                         
                         await sayTTS("Ok, on annule. N'hésitez pas à refaire une demande.", "fr");
+                        process.exit()
+
 
                     }
 
