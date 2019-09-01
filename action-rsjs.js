@@ -33,12 +33,12 @@ function start() {
 }
 
 
-    start();
+start();
 
-    var sayClient = client;
+var sayClient = client;
 
-    sayClient.publish('hermes/tts/say', JSON.stringify({
-        "text": "Je démarre...",
-        "lang": "fr",
-        "siteId": "default"
-    }));
+sayClient.publish('hermes/tts/say', JSON.stringify({
+    "text": "Je démarre...",
+    "lang": "fr",
+    "siteId": "default"
+}));
