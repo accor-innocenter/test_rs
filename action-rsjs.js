@@ -3,7 +3,7 @@ const { withHermes } = require('hermes-javascript');
 const mqtt = require('mqtt');
 const client = mqtt.connect('mqtt://localhost:1883');
 
-const myChild = __dirname+"child.js";
+const myChild = __dirname+"/child.js";
 
 function start() {
     if (typeof nodefile !== 'string') {
