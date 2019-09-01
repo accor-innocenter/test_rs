@@ -1,6 +1,6 @@
 var child_process = require('child_process');
 
-const myChild = "./child.js";
+const myChild = "/var/lib/snips/skills/test_rs/child.js";
 
 start();
 function start() {
