@@ -1,5 +1,7 @@
 var child_process = require('child_process');
 const { withHermes } = require('hermes-javascript');
+const mqtt = require('mqtt');
+const client = mqtt.connect('mqtt://localhost:1883');
 
 const myChild = __dirname+"child.js";
 
@@ -30,11 +32,12 @@ function start() {
     });
 }
 
-withHermes( hermes => {
+start();
 
-    const dialog = hermes.dialog();
+var sayClient = client;
 
-    start();
-
-
-})
+sayClient.publish('hermes/tts/say', JSON.stringify({
+    "text": "Je démarre...",
+    "lang": "fr",
+    "siteId": "default"
+}));
