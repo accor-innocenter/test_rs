@@ -1,14 +1,16 @@
 var child_process = require('child_process');
 
-start("child.js");
-function start(nodefile) {
-    if (typeof start !== 'string') {
+const myChild = "child.js";
+
+start();
+function start() {
+    if (typeof nodefile !== 'string') {
         console.log('Has none file. like this: start("app.js")');
     }
 
     console.log('Master process is running.');
     
-    var proc = child_process.spawn('node', [nodefile]);
+    var proc = child_process.spawn('node', [myChild]);
 
     proc.stdout.on('data', function (data) {
         console.log(data.toString());
@@ -23,7 +25,7 @@ function start(nodefile) {
         delete(proc);
         setTimeout(()=>{
             console.log("child relaunched");
-            start(nodefile);
+            start();
         }, 1000);
     });
 }
