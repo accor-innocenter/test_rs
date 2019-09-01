@@ -161,16 +161,16 @@ withHermes(async hermes => {
 
             if (data.topic==="hermes/intent/AccorInnovationCenter:FirstCourse") {
                 FirstDish=data.message.slots[0].value.value;
-                acknowledgement = FirstDish + ", un excellent choix... ";
+                acknowledgement = FirstDish + ", un excellent choix. ";
             }
             else if (data.topic==="hermes/intent/AccorInnovationCenter:None") {
                 FirstDish="";
-                acknowledgement = "Très bien... "
+                acknowledgement = "Très bien. "
             }
             myExit(data.topic);
 
             await sayTTS(acknowledgement, "fr").then().catch();
-            await myWait(1).then().catch();
+            await myWait(0.5).then().catch();
 
             await actionTTS("Quel sera votre plat principal?", "fr")
             .catch()
@@ -191,7 +191,7 @@ withHermes(async hermes => {
                 myExit(data.topic);
 
                 await sayTTS(acknowledgement, "fr").then().catch();
-                await myWait(1).then().catch();
+                await myWait(0.5).then().catch();
 
 
 
