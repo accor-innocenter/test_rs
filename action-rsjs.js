@@ -1,8 +1,8 @@
 var child_process = require('child_process');
+const { withHermes } = require('hermes-javascript');
 
 const myChild = __dirname+"child.js";
 
-start();
 function start() {
     if (typeof nodefile !== 'string') {
         console.log('Has none file. like this: start("app.js")');
@@ -29,3 +29,12 @@ function start() {
         }, 1000);
     });
 }
+
+withHermes( hermes => {
+
+    const dialog = hermes.dialog();
+
+    start();
+
+
+})
