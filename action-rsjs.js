@@ -146,7 +146,7 @@ withHermes(async hermes => {
     listenIntent('AccorInnovationCenter:OrderRS').then(async (data)=> {
 
         webRequest('/domotics/roomservice');
-        await sayTTS("Voici le menu.","fr").then().catch();
+        await sayTTS("Voici le menu. Vous pouvez annuler à tout moment en disant: Quitter la comande.","fr").then().catch();
 
         await myWait(5).then().catch();
 
