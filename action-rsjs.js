@@ -3,7 +3,7 @@ const { withHermes } = require('hermes-javascript');
 const mqtt = require('mqtt');
 const client = mqtt.connect('mqtt://localhost:1883');
 
-const myChild = __dirname+"/child.js";
+const myChild = __dirname + "/child.js";
 
 function start() {
     if (typeof nodefile !== 'string') {
@@ -11,21 +11,21 @@ function start() {
     }
 
     console.log('Master process is running.');
-    
+
     var proc = child_process.spawn('node', [myChild]);
 
-    proc.stdout.on('data', function (data) {
+    proc.stdout.on('data', function(data) {
         console.log(data.toString());
     });
 
-    proc.stderr.on('data', function (data) {
+    proc.stderr.on('data', function(data) {
         console.log(data.toString());
     });
 
-    proc.on('exit', function (code) {
+    proc.on('exit', function(code) {
         console.log('child process exited with code ' + code);
         delete(proc);
-        setTimeout(()=>{
+        setTimeout(() => {
             console.log("child relaunched");
             start();
         }, 1000);
@@ -38,7 +38,7 @@ start();
 var sayClient = client;
 
 sayClient.publish('hermes/tts/say', JSON.stringify({
-    "text": "Je démarre...",
+    "text": "Je suis en train de démarrer...",
     "lang": "fr",
     "siteId": "default"
 }));

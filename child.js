@@ -19,6 +19,9 @@ var Dessert = "";
 
 var mySession = "";
 
+
+
+
 //MAKE SNIPS SAY SOMETHING (WITHOUT USER FEEDBACK)
 function sayTTS(msg, lang) {
 
@@ -45,8 +48,11 @@ function sayTTS(msg, lang) {
 
 }
 
-//MAKE SNIPS ASK A QUESTION AND LISTEN TO USER FEEDBACK
-function actionTTS(msg,lang) {
+
+
+
+//MAKE SNIPS ASK A QUESTION AND LISTEN TO USER FEEDBACK (CATCH INTENT OUTSIDE)
+function actionTTS(msg, lang) {
 
     return new Promise((resolve) => {
 
@@ -55,30 +61,30 @@ function actionTTS(msg,lang) {
         var actClient = client;
 
         actClient.publish('hermes/dialogueManager/startSession', JSON.stringify({
-            "init": 
-                {
-                    "type": "action",
-                    "text": msg
-                }
-            }));
+            "init": {
+                "type": "action",
+                "text": msg
+            }
+        }));
 
         console.log("publish sent");
 
-        listenIntent('#').then((data)=>{
+        listenIntent('#').then((data) => {
             resolve(data);
         })
-
 
     });
 
 }
 
-//LISTEN & CATCH INTENTS IN PROMISE
+
+
+//LISTEN & RETURN INTENTS IN PROMISE
 function listenIntent(intent) {
 
     return new Promise((resolve) => {
 
-        var catchIntents = client.subscribe('hermes/intent/'+intent);
+        var catchIntents = client.subscribe('hermes/intent/' + intent);
         client.on('message', (topic, message) => {
             console.log(topic);
             console.log(JSON.parse(message.toString()));
@@ -92,6 +98,9 @@ function listenIntent(intent) {
 
     });
 }
+
+
+
 
 //SIMPLE WAIT FUNCTION ENCAPSULATED IN PROMISE
 function myWait(timeSec) {
@@ -107,12 +116,15 @@ function myWait(timeSec) {
 
 }
 
-//LAUNCH WEB REQUEST TO NODE-RED SERVER
-function webRequest(webreq){
 
-    return new Promise((resolve,reject) => {
+
+
+//LAUNCH WEB REQUEST TO NODE-RED SERVER
+function webRequest(webreq) {
+
+    return new Promise((resolve, reject) => {
         const fetchPromise = fetch(server + webreq);
-        
+
         fetchPromise.then(response => {
             //console.log("@@@@@@@@@@@@@@@@@@@@@@@");
             //console.log(response);
@@ -120,158 +132,207 @@ function webRequest(webreq){
             //console.log("@@@@@@@@@@@@@@@@@@@@@@@");
             //console.log(data);
             resolve(data);
-        }).catch((error)=>{
+        }).catch((error) => {
             reject(error);
         });
 
     });
 }
 
-function myExit(topic){
-    if (topic==="hermes/intent/AccorInnovationCenter:Exit") {
-        sayTTS("Ok, on annule tout.","fr").then(function(){
+//LAUNCH WEB REQUEST TO NODE-RED SERVER
+function webRequestPOST(webreq, mydata) {
+
+    return new Promise((resolve, reject) => {
+        const fetchPromise = fetch(server + webreq, {
+            method: 'POST', // *GET, POST, PUT, DELETE, etc.
+            mode: 'no-cors', // no-cors, cors, *same-origin
+            cache: 'no-cache', // *default, no-cache, reload, force-cache, only-if-cached
+            credentials: 'same-origin', // include, *same-origin, omit
+            headers: {
+                'Content-Type': 'application/json',
+                // 'Content-Type': 'application/x-www-form-urlencoded',
+            },
+            redirect: 'follow', // manual, *follow, error
+            referrer: 'no-referrer', // no-referrer, *client
+            body: JSON.stringify(mydata), // body data type must match "Content-Type" header
+        });
+
+        fetchPromise.then(response => {
+            //console.log("@@@@@@@@@@@@@@@@@@@@@@@");
+            //console.log(response.json());
+        }).then(data => {
+            //console.log("@@@@@@@@@@@@@@@@@@@@@@@");
+            //console.log(data);
+            resolve(data);
+        }).catch((error) => {
+            reject(error);
+        });
+
+    });
+}
+
+
+
+
+
+//EXIT FUNCTION KILLS CHILD PROCESS (RELAUNCHED BY PARENT)
+function myExit(topic) {
+    if (topic === "hermes/intent/AccorInnovationCenter:Exit") {
+        sayTTS("Ok, on annule tout.", "fr").then(function() {
             process.exit()
             console.log("exit now");
             throw new Error();
         }).catch();
 
-        
+
     }
 }
 
+
+
+
+
+
+
+//MAIN FUNCTION
 withHermes(async hermes => {
 
     const dialog = hermes.dialog();
 
-    listenIntent('AccorInnovationCenter:OrderRS').then(async (data)=> {
+    listenIntent('AccorInnovationCenter:OrderRS').then(async(data) => {
 
         webRequest('/domotics/roomservice');
-        await sayTTS("Voici le menu. Vous pouvez annuler à tout moment en disant: Quitter la comande.","fr").then().catch();
+        await sayTTS("Voici le menu. Vous pouvez annuler à tout moment en disant: Quitter la comande.", "fr").then().catch();
 
         await myWait(5).then().catch();
 
         await actionTTS("Quelle entrée souhaitez-vous?", "fr")
-        .catch()
-        .then(async (data)=>{
-
-            //console.log("@@@@@@@@@@@@@@@@@@@@@@@@@@@");
-            //console.log(data);
-
-            var acknowledgement = "";
-
-            if (data.topic==="hermes/intent/AccorInnovationCenter:FirstCourse") {
-                FirstDish=data.message.slots[0].value.value;
-                acknowledgement = FirstDish + ", un excellent choix. ";
-            }
-            else if (data.topic==="hermes/intent/AccorInnovationCenter:None") {
-                FirstDish="";
-                acknowledgement = "Très bien. "
-            }
-            myExit(data.topic);
-
-            await sayTTS(acknowledgement, "fr").then().catch();
-            await myWait(0.5).then().catch();
-
-            await actionTTS("Quel sera votre plat principal?", "fr")
             .catch()
-            .then(async (data)=>{
+            .then(async(data) => {
 
+                //console.log("@@@@@@@@@@@@@@@@@@@@@@@@@@@");
                 //console.log(data);
 
                 var acknowledgement = "";
 
-                if (data.topic==="hermes/intent/AccorInnovationCenter:SecondCourse") {
-                    SecondDish=data.message.slots[0].value.value;
-                    acknowledgement = SecondDish + " c'est une spécialité de la maison.";
-                }
-                else if (data.topic==="hermes/intent/AccorInnovationCenter:None") {
-                    SecondDish="";
-                    acknowledgement = "Pas de plat principal? Ok."
+                if (data.topic === "hermes/intent/AccorInnovationCenter:FirstCourse") {
+                    FirstDish = data.message.slots[0].value.value;
+                    acknowledgement = FirstDish + ", un excellent choix. ";
+                } else if (data.topic === "hermes/intent/AccorInnovationCenter:None") {
+                    FirstDish = "";
+                    acknowledgement = "Très bien. "
                 }
                 myExit(data.topic);
 
                 await sayTTS(acknowledgement, "fr").then().catch();
-                await myWait(0.5).then().catch();
+                //await myWait(0.5).then().catch();
+
+                await actionTTS("Quel sera votre plat principal?", "fr")
+                    .catch()
+                    .then(async(data) => {
+
+                        //console.log(data);
+
+                        var acknowledgement = "";
+
+                        if (data.topic === "hermes/intent/AccorInnovationCenter:SecondCourse") {
+                            SecondDish = data.message.slots[0].value.value;
+                            acknowledgement = SecondDish + " c'est une spécialité de la maison.";
+                        } else if (data.topic === "hermes/intent/AccorInnovationCenter:None") {
+                            SecondDish = "";
+                            acknowledgement = "Pas de plat principal? Ok."
+                        }
+                        myExit(data.topic);
+
+                        await sayTTS(acknowledgement, "fr").then().catch();
+                        //await myWait(0.5).then().catch();
 
 
 
-                await actionTTS("Et finallement comme dessert?", "fr")
-                .catch()
-                .then(async (data)=>{
+                        await actionTTS("Et finallement comme dessert?", "fr")
+                            .catch()
+                            .then(async(data) => {
 
-                    //console.log(data);
+                                //console.log(data);
 
-                    var acknowledgement = "";
+                                var acknowledgement = "";
 
-                    if (data.topic==="hermes/intent/AccorInnovationCenter:Dessert") {
-                        Dessert=data.message.slots[0].value.value;
-                        acknowledgement = Dessert + ", excellent.";
-                    }
-                    else if (data.topic==="hermes/intent/AccorInnovationCenter:None") {
-                        Dessert="";
-                        acknowledgement = "Pas de dessert."
-                    }
-                    myExit(data.topic);
+                                if (data.topic === "hermes/intent/AccorInnovationCenter:Dessert") {
+                                    Dessert = data.message.slots[0].value.value;
+                                    acknowledgement = Dessert + ", excellent.";
+                                } else if (data.topic === "hermes/intent/AccorInnovationCenter:None") {
+                                    Dessert = "";
+                                    acknowledgement = "Pas de dessert."
+                                }
+                                myExit(data.topic);
 
-                    await sayTTS(acknowledgement, "fr").then().catch();
-                    await myWait(1).then().catch();
+                                await sayTTS(acknowledgement, "fr").then().catch();
+                                await myWait(1).then().catch();
 
-                });
-
+                            });
 
 
 
-                var result = "En résumé, on a...";
-                if (FirstDish!=="") {
-                    result += FirstDish + " en entrée, puis ";
-                }
-                else {
-                    result += " aucune entrée, ";
-                }
 
-                if (SecondDish!=="") {
-                    result += "comme plat principal " + SecondDish + ", et "
-                }
-                else {
-                    result += " pas de plat principal, ";
-                }
+                        var result = "En résumé, on a...";
+                        if (FirstDish !== "") {
+                            result += FirstDish + " en entrée, puis ";
+                        } else {
+                            result += " aucune entrée, ";
+                        }
 
-                if (Dessert!=="") {
-                    result += "finalement " + Dessert + " pour dessert."
-                }
-                else {
-                    result += " aucun dessert. ";
-                }
+                        if (SecondDish !== "") {
+                            result += "comme plat principal " + SecondDish + ", et "
+                        } else {
+                            result += " pas de plat principal, ";
+                        }
 
-                await sayTTS(result, "fr").then().catch();
-                await myWait(1).then().catch();
+                        if (Dessert !== "") {
+                            result += "finalement " + Dessert + " pour dessert."
+                        } else {
+                            result += " aucun dessert. ";
+                        }
 
-                await actionTTS("C'est correct?", "fr")
-                .catch()
-                .then(async (data)=>{
+                        await sayTTS(result, "fr").then().catch();
+                        //await myWait(1).then().catch();
 
-                    //console.log(data);
+                        await actionTTS("C'est correct?", "fr")
+                            .catch()
+                            .then(async(data) => {
 
-                    if (data.topic==="hermes/intent/AccorInnovationCenter:Yes") {
-                        
-                        await sayTTS("Parfait, votre commande arrivera dans 20 minutes. Bonne dégustation!", "fr");
-                        process.exit()
+                                //console.log(data);
 
-                        
-                    }
-                    else if (data.topic==="hermes/intent/AccorInnovationCenter:None") {
-                        
-                        await sayTTS("Ok, on annule. N'hésitez pas à refaire une demande.", "fr");
-                        process.exit()
+                                if (data.topic === "hermes/intent/AccorInnovationCenter:Yes") {
+
+                                    await sayTTS("Parfait, votre commande arrivera dans 20 minutes. Bonne dégustation!", "fr");
 
 
-                    }
+                                    await myWait(3).then().catch();
 
-                });
+
+                                    await webRequestPOST("http://api.pushover.net", {
+                                        token: "a6j9dzt3e43pvmm8a5r8gmrwn3rdxc",
+                                        user: "uug6ffq8vqytsrvdqhva9hqeev1iia",
+                                        title: "Room Service",
+                                        message: "Votre commande arrive dans une minute!"
+                                    }).then().catch();
+
+                                    process.exit();
+
+
+                                } else if (data.topic === "hermes/intent/AccorInnovationCenter:None") {
+
+                                    await sayTTS("Ok, on annule. N'hésitez pas à refaire une demande.", "fr");
+                                    process.exit()
+
+
+                                }
+
+                            });
+
+                    });
 
             });
-
-        });
 
     })
 
