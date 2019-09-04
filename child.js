@@ -310,7 +310,7 @@ withHermes(async hermes => {
                                     await myWait(3).then().catch();
 
 
-                                    await webRequestPOST("https://maker.ifttt.com/trigger/PushNotification/with/key/c6h_lSARLyhKpzYEyNPt7STZGaW4knm53pc3Ur_BKR-", {
+                                    await webRequestPOST("https://maker.ifttt.com/trigger/PushRich/with/key/c6h_lSARLyhKpzYEyNPt7STZGaW4knm53pc3Ur_BKR-", {
                                         value1: "Votre commande arrive dans une minute!"
                                     }).then().catch();
 
