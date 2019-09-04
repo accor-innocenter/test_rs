@@ -403,7 +403,7 @@ withHermes(async hermes => {
     listenIntent('AccorInnovationCenter:Checkout').then(async(data) => {
         if (data.topic === "hermes/intent/AccorInnovationCenter:Checkout") {
             var total = rs_cost + 350;
-            var checksum = "Très bien, faisons le checkout.   ";
+            var checksum = "Très bien, faisons le tchèque aoute.   ";
             checksum += "Votre nuit d'hôtel fera 350 euros.   ";
             checksum += "Vous avez dépensé " + rs_cost + " euros en room service.  ";
             checksum += "Ceci vous fait un total de " + total + " euros.  ";
