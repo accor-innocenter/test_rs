@@ -8,6 +8,8 @@ const client = mqtt.connect('mqtt://localhost:1883');
 
 const { Enums } = require('hermes-javascript/types')
 
+const Store = require('data-store');
+const store = new Store({ path: 'config.json' });
 
 //Server adress
 const server = "http://192.168.86.76:1880";
@@ -19,6 +21,12 @@ var Dessert = "";
 
 var mySession = "";
 
+var temp_cost = 0;
+var rs_cost = 0;
+
+if (store.hasOwn('rs_cost')) {
+    rs_cost = store.get('rs_cost');
+}
 
 
 
@@ -188,6 +196,19 @@ function myExit(topic) {
     }
 }
 
+//EXIT FUNCTION KILLS CHILD PROCESS (RELAUNCHED BY PARENT)
+function myExit(topic) {
+    if (topic === "hermes/intent/AccorInnovationCenter:Exit") {
+        sayTTS("Ok, on annule tout.", "fr").then(function() {
+            process.exit()
+            console.log("exit now");
+            throw new Error();
+        }).catch();
+
+
+    }
+}
+
 
 
 
@@ -201,136 +222,229 @@ withHermes(async hermes => {
 
     listenIntent('AccorInnovationCenter:OrderRS').then(async(data) => {
 
-        webRequest(server + '/domotics/roomservice');
-        await sayTTS("Voici le menu. Vous pouvez annuler à tout moment en disant: Quitter la comande. Je vous laisse quelques secondes pour choisir.", "fr").then().catch();
+        if (data.topic === "hermes/intent/AccorInnovationCenter:OrderRS") {
 
-        await myWait(5).then().catch();
+            webRequest(server + '/domotics/roomservice');
+            await sayTTS("Voici le menu. Vous pouvez annuler à tout moment en disant: Quitter la comande. Je vous laisse quelques secondes pour choisir.", "fr").then().catch();
 
-        await actionTTS("Quelle entrée souhaitez-vous?", "fr")
-            .catch()
-            .then(async(data) => {
+            await myWait(5).then().catch();
 
-                //console.log("@@@@@@@@@@@@@@@@@@@@@@@@@@@");
-                //console.log(data);
+            await actionTTS("Quelle entrée souhaitez-vous?", "fr")
+                .catch()
+                .then(async(data) => {
 
-                var acknowledgement = "";
+                    //console.log("@@@@@@@@@@@@@@@@@@@@@@@@@@@");
+                    //console.log(data);
 
-                if (data.topic === "hermes/intent/AccorInnovationCenter:FirstCourse") {
-                    FirstDish = data.message.slots[0].value.value;
-                    acknowledgement = FirstDish + ", un excellent choix. ";
-                } else if (data.topic === "hermes/intent/AccorInnovationCenter:None") {
-                    FirstDish = "";
-                    acknowledgement = "Très bien. "
-                }
-                myExit(data.topic);
+                    var acknowledgement = "";
 
-                await sayTTS(acknowledgement, "fr").then().catch();
-                //await myWait(0.5).then().catch();
+                    if (data.topic === "hermes/intent/AccorInnovationCenter:FirstCourse") {
+                        FirstDish = data.message.slots[0].value.value;
+                        acknowledgement = FirstDish + ", un excellent choix. ";
 
-                await actionTTS("Quel sera votre plat principal?", "fr")
-                    .catch()
-                    .then(async(data) => {
-
-                        //console.log(data);
-
-                        var acknowledgement = "";
-
-                        if (data.topic === "hermes/intent/AccorInnovationCenter:SecondCourse") {
-                            SecondDish = data.message.slots[0].value.value;
-                            acknowledgement = SecondDish + " c'est une spécialité de la maison.";
-                        } else if (data.topic === "hermes/intent/AccorInnovationCenter:None") {
-                            SecondDish = "";
-                            acknowledgement = "Pas de plat principal? Ok."
+                        if (FirstDish.toLowerCase().indexOf("tataki") !== -1) {
+                            temp_cost += 4;
                         }
-                        myExit(data.topic);
+                        if (FirstDish.toLowerCase().indexOf("gazpacho") !== -1) {
+                            temp_cost += 5;
+                        }
+                        if (FirstDish.toLowerCase().indexOf("soupe") !== -1) {
+                            temp_cost += 4.5;
+                        }
 
-                        await sayTTS(acknowledgement, "fr").then().catch();
-                        //await myWait(0.5).then().catch();
+                    } else if (data.topic === "hermes/intent/AccorInnovationCenter:None") {
+                        FirstDish = "";
+                        acknowledgement = "Très bien. "
+                    }
+                    myExit(data.topic);
 
+                    await sayTTS(acknowledgement, "fr").then().catch();
+                    //await myWait(0.5).then().catch();
 
+                    await actionTTS("Quel sera votre plat principal?", "fr")
+                        .catch()
+                        .then(async(data) => {
 
-                        await actionTTS("Et finallement comme dessert?", "fr")
-                            .catch()
-                            .then(async(data) => {
+                            //console.log(data);
 
-                                //console.log(data);
+                            var acknowledgement = "";
 
-                                var acknowledgement = "";
+                            if (data.topic === "hermes/intent/AccorInnovationCenter:SecondCourse") {
+                                SecondDish = data.message.slots[0].value.value;
+                                acknowledgement = SecondDish + " c'est une spécialité de la maison.";
 
-                                if (data.topic === "hermes/intent/AccorInnovationCenter:Dessert") {
-                                    Dessert = data.message.slots[0].value.value;
-                                    acknowledgement = Dessert + ", excellent.";
-                                } else if (data.topic === "hermes/intent/AccorInnovationCenter:None") {
-                                    Dessert = "";
-                                    acknowledgement = "Pas de dessert."
+                                if (SecondDish.toLowerCase().indexOf("ravioli") !== -1) {
+                                    temp_cost += 9;
                                 }
-                                myExit(data.topic);
-
-                                await sayTTS(acknowledgement, "fr").then().catch();
-                                //await myWait(1).then().catch();
-
-                            });
-
-
-
-
-                        var result = "En résumé, on a";
-                        if (FirstDish !== "") {
-                            result += FirstDish + " en entrée, puis ";
-                        } else {
-                            result += " aucune entrée, ";
-                        }
-
-                        if (SecondDish !== "") {
-                            result += "comme plat principal " + SecondDish + ", et "
-                        } else {
-                            result += " pas de plat principal, ";
-                        }
-
-                        if (Dessert !== "") {
-                            result += "finalement " + Dessert + " pour dessert."
-                        } else {
-                            result += " aucun dessert. ";
-                        }
-
-                        await sayTTS(result, "fr").then().catch();
-                        //await myWait(1).then().catch();
-
-                        await actionTTS("C'est correct?", "fr")
-                            .catch()
-                            .then(async(data) => {
-
-                                //console.log(data);
-
-                                if (data.topic === "hermes/intent/AccorInnovationCenter:Yes") {
-
-                                    await sayTTS("Parfait, votre commande arrivera dans 20 minutes. Bonne dégustation!", "fr");
-
-
-                                    await myWait(3).then().catch();
-
-
-                                    await webRequestDATA("https://maker.ifttt.com/trigger/PushRich/with/key/c6h_lSARLyhKpzYEyNPt7STZGaW4knm53pc3Ur_BKR-", {
-                                        value1: "Votre commande arrive dans une minute!"
-                                    }).then().catch();
-
-                                    process.exit();
-
-
-                                } else if (data.topic === "hermes/intent/AccorInnovationCenter:None") {
-
-                                    await sayTTS("Ok, on annule. N'hésitez pas à refaire une demande.", "fr");
-                                    process.exit()
-
-
+                                if (SecondDish.toLowerCase().indexOf("boeuf") !== -1) {
+                                    temp_cost += 11;
+                                }
+                                if (SecondDish.toLowerCase().indexOf("quiche") !== -1) {
+                                    temp_cost += 8;
                                 }
 
-                            });
+                            } else if (data.topic === "hermes/intent/AccorInnovationCenter:None") {
+                                SecondDish = "";
+                                acknowledgement = "Pas de plat principal? Ok."
+                            }
+                            myExit(data.topic);
 
-                    });
+                            await sayTTS(acknowledgement, "fr").then().catch();
+                            //await myWait(0.5).then().catch();
 
-            });
 
+
+                            await actionTTS("Et finallement comme dessert?", "fr")
+                                .catch()
+                                .then(async(data) => {
+
+                                    //console.log(data);
+
+                                    var acknowledgement = "";
+
+                                    if (data.topic === "hermes/intent/AccorInnovationCenter:Dessert") {
+                                        Dessert = data.message.slots[0].value.value;
+                                        acknowledgement = Dessert + ", excellent.";
+
+                                        if (Dessert.toLowerCase().indexOf("crème") !== -1) {
+                                            temp_cost += 5;
+                                        }
+                                        if (Dessert.toLowerCase().indexOf("fruits") !== -1) {
+                                            temp_cost += 5;
+                                        }
+                                        if (Dessert.toLowerCase().indexOf("fondant") !== -1) {
+                                            temp_cost += 6;
+                                        }
+
+                                    } else if (data.topic === "hermes/intent/AccorInnovationCenter:None") {
+                                        Dessert = "";
+                                        acknowledgement = "Pas de dessert."
+                                    }
+                                    myExit(data.topic);
+
+                                    await sayTTS(acknowledgement, "fr").then().catch();
+                                    //await myWait(1).then().catch();
+
+                                });
+
+
+
+
+                            var result = "En résumé, on a";
+                            if (FirstDish !== "") {
+                                result += FirstDish + " en entrée, puis ";
+                            } else {
+                                result += " aucune entrée, ";
+                            }
+
+                            if (SecondDish !== "") {
+                                result += "comme plat principal " + SecondDish + ", et "
+                            } else {
+                                result += " pas de plat principal, ";
+                            }
+
+                            if (Dessert !== "") {
+                                result += "finalement " + Dessert + " pour dessert."
+                            } else {
+                                result += " aucun dessert. ";
+                            }
+
+                            result += "Ceci fait un total de " + temp_cost + " euros.";
+
+                            await sayTTS(result, "fr").then().catch();
+                            //await myWait(1).then().catch();
+
+                            await actionTTS("C'est correct?", "fr")
+                                .catch()
+                                .then(async(data) => {
+
+                                    //console.log(data);
+
+                                    if (data.topic === "hermes/intent/AccorInnovationCenter:Yes") {
+
+                                        await sayTTS("Parfait, votre commande arrivera dans 20 minutes. Bonne dégustation!", "fr");
+
+                                        rs_cost += temp_cost;
+                                        temp_cost = 0;
+                                        store.set('rs_cost', rs_cost);
+
+                                        await myWait(3).then().catch();
+
+
+                                        await webRequestDATA("https://maker.ifttt.com/trigger/PushRich/with/key/c6h_lSARLyhKpzYEyNPt7STZGaW4knm53pc3Ur_BKR-", {
+                                            "value1": "Votre commande arrive dans une minute!"
+                                        }).then().catch();
+
+                                        process.exit();
+
+
+                                    } else if (data.topic === "hermes/intent/AccorInnovationCenter:None") {
+
+                                        await sayTTS("Ok, on annule. N'hésitez pas à refaire une demande.", "fr");
+                                        process.exit()
+
+
+                                    }
+
+                                });
+
+                        });
+
+                });
+        }
     })
+
+    //Detect Reset
+    listenIntent('AccorInnovationCenter:Reset').then(async(data) => {
+        if (data.topic === "hermes/intent/AccorInnovationCenter:Reset") {
+            store.set('rs_cost', 0);
+            process.exit();
+        }
+    });
+
+    //Detect Checkout
+    listenIntent('AccorInnovationCenter:Checkout').then(async(data) => {
+        if (data.topic === "hermes/intent/AccorInnovationCenter:Checkout") {
+            var total = rs_cost + 350;
+            var checksum = "Très bien, faisons le checkout.";
+            checksum += "Votre nuit d'hôtel fera 350 euros.";
+            checksum += "Vous avez dépensé " + rs_cost + " euros en room service.";
+            checksum += "Ceci vous fait un total de " + total + " euros.";
+
+            await sayTTS(checksum, "fr").then().catch();
+
+            await actionTTS("C'est correct?", "fr")
+                .catch()
+                .then(async(data) => {
+
+                    //console.log(data);
+
+                    if (data.topic === "hermes/intent/AccorInnovationCenter:Yes") {
+
+                        await sayTTS("Parfait, on vous envoie la facture par email tout de suite. Vous pouvez laisser votre clé dans la boité à l'entrée ou sur la table de votre chambre. À très bientôt!", "fr");
+
+                        await webRequestDATA("https://maker.ifttt.com/trigger/EmailInvoice/with/key/c6h_lSARLyhKpzYEyNPt7STZGaW4knm53pc3Ur_BKR-", {
+                            "value1": total.toString(),
+                            "value2": rs_cost.toString()
+
+                        }).then().catch();
+
+                        process.exit();
+
+
+                    } else if (data.topic === "hermes/intent/AccorInnovationCenter:None") {
+
+                        await sayTTS("Désolé pour le désagrément, il a dû y avoir une erreur. S'il vous plait, présentez-vous à l'accueil pour faire le checkout.", "fr");
+                        process.exit()
+
+
+                    }
+
+                });
+
+
+
+        }
+    });
 
 })
