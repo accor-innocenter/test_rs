@@ -202,7 +202,7 @@ withHermes(async hermes => {
     listenIntent('AccorInnovationCenter:OrderRS').then(async(data) => {
 
         webRequest('/domotics/roomservice');
-        await sayTTS("Voici le menu. Vous pouvez annuler à tout moment en disant: Quitter la comande.", "fr").then().catch();
+        await sayTTS("Voici le menu. Vous pouvez annuler à tout moment en disant: Quitter la comande. Je vous laisse quelques secondes pour choisir.", "fr").then().catch();
 
         await myWait(5).then().catch();
 
@@ -267,14 +267,14 @@ withHermes(async hermes => {
                                 myExit(data.topic);
 
                                 await sayTTS(acknowledgement, "fr").then().catch();
-                                await myWait(1).then().catch();
+                                //await myWait(1).then().catch();
 
                             });
 
 
 
 
-                        var result = "En résumé, on a...";
+                        var result = "En résumé, on a";
                         if (FirstDish !== "") {
                             result += FirstDish + " en entrée, puis ";
                         } else {
