@@ -140,11 +140,11 @@ function webRequest(webreq) {
 }
 
 //LAUNCH WEB REQUEST TO NODE-RED SERVER
-function webRequestPOST(webreq, mydata) {
+function webRequestDATA(webreq, mydata) {
 
     return new Promise((resolve, reject) => {
         const fetchPromise = fetch(server + webreq, {
-            method: 'POST', // *GET, POST, PUT, DELETE, etc.
+            method: 'GET', // *GET, POST, PUT, DELETE, etc.
             mode: 'no-cors', // no-cors, cors, *same-origin
             cache: 'no-cache', // *default, no-cache, reload, force-cache, only-if-cached
             credentials: 'same-origin', // include, *same-origin, omit
@@ -310,7 +310,7 @@ withHermes(async hermes => {
                                     await myWait(3).then().catch();
 
 
-                                    await webRequestPOST("https://maker.ifttt.com/trigger/PushRich/with/key/c6h_lSARLyhKpzYEyNPt7STZGaW4knm53pc3Ur_BKR-", {
+                                    await webRequestDATA("https://maker.ifttt.com/trigger/PushRich/with/key/c6h_lSARLyhKpzYEyNPt7STZGaW4knm53pc3Ur_BKR-", {
                                         value1: "Votre commande arrive dans une minute!"
                                     }).then().catch();
 
