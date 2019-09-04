@@ -123,7 +123,7 @@ function myWait(timeSec) {
 function webRequest(webreq) {
 
     return new Promise((resolve, reject) => {
-        const fetchPromise = fetch(server + webreq);
+        const fetchPromise = fetch(webreq);
 
         fetchPromise.then(response => {
             //console.log("@@@@@@@@@@@@@@@@@@@@@@@");
@@ -143,7 +143,7 @@ function webRequest(webreq) {
 function webRequestDATA(webreq, mydata) {
 
     return new Promise((resolve, reject) => {
-        const fetchPromise = fetch(server + webreq, {
+        const fetchPromise = fetch(webreq, {
             method: 'GET', // *GET, POST, PUT, DELETE, etc.
             mode: 'no-cors', // no-cors, cors, *same-origin
             cache: 'no-cache', // *default, no-cache, reload, force-cache, only-if-cached
@@ -201,7 +201,7 @@ withHermes(async hermes => {
 
     listenIntent('AccorInnovationCenter:OrderRS').then(async(data) => {
 
-        webRequest('/domotics/roomservice');
+        webRequest(server + '/domotics/roomservice');
         await sayTTS("Voici le menu. Vous pouvez annuler à tout moment en disant: Quitter la comande. Je vous laisse quelques secondes pour choisir.", "fr").then().catch();
 
         await myWait(5).then().catch();
