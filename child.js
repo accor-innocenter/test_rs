@@ -152,10 +152,7 @@ function webRequestDATA(webreq, mydata) {
 
     return new Promise((resolve, reject) => {
         const fetchPromise = fetch(webreq, {
-            method: 'GET', // *GET, POST, PUT, DELETE, etc.
-            mode: 'no-cors', // no-cors, cors, *same-origin
-            cache: 'no-cache', // *default, no-cache, reload, force-cache, only-if-cached
-            credentials: 'same-origin', // include, *same-origin, omit
+            method: 'POST', // *GET, POST, PUT, DELETE, etc.
             headers: {
                 'Content-Type': 'application/json',
                 // 'Content-Type': 'application/x-www-form-urlencoded',
@@ -406,10 +403,10 @@ withHermes(async hermes => {
     listenIntent('AccorInnovationCenter:Checkout').then(async(data) => {
         if (data.topic === "hermes/intent/AccorInnovationCenter:Checkout") {
             var total = rs_cost + 350;
-            var checksum = "Très bien, faisons le checkout.";
-            checksum += "Votre nuit d'hôtel fera 350 euros.";
-            checksum += "Vous avez dépensé " + rs_cost + " euros en room service.";
-            checksum += "Ceci vous fait un total de " + total + " euros.";
+            var checksum = "Très bien, faisons le checkout.   ";
+            checksum += "Votre nuit d'hôtel fera 350 euros.   ";
+            checksum += "Vous avez dépensé " + rs_cost + " euros en room service.  ";
+            checksum += "Ceci vous fait un total de " + total + " euros.  ";
 
             await sayTTS(checksum, "fr").then().catch();
 
@@ -427,7 +424,9 @@ withHermes(async hermes => {
                             "value1": total.toString(),
                             "value2": rs_cost.toString()
 
-                        }).then().catch();
+                        }).then((data)=>{
+                            console.log(data);
+                        }).catch();
 
                         process.exit();
 
