@@ -339,12 +339,12 @@ withHermes(async hermes => {
                             }
 
                             if (Dessert !== "") {
-                                result += "finalement " + Dessert + " pour dessert."
+                                result += "finalement " + Dessert + " pour dessert. "
                             } else {
                                 result += " aucun dessert. ";
                             }
 
-                            result += "Ceci fait un total de " + temp_cost + " euros.";
+                            result += "Ceci fait un total de " + temp_cost + " euros. ";
 
                             await sayTTS(result, "fr").then().catch();
                             //await myWait(1).then().catch();
@@ -403,7 +403,7 @@ withHermes(async hermes => {
             var total = rs_cost + 350;
             var checksum = "Très bien, faisons le tchèque à oute.   ";
             checksum += "Votre nuit d'hôtel fera 350 euros.   ";
-            checksum += "Vous avez dépensé " + rs_cost + " euros en room service.  ";
+            checksum += "Vous avez dépensé " + rs_cost + " euros en boissons et nourriture.  ";
             checksum += "Ceci vous fait un total de " + total + " euros.  ";
 
             await sayTTS(checksum, "fr").then().catch();
@@ -416,7 +416,7 @@ withHermes(async hermes => {
 
                     if (data.topic === "hermes/intent/AccorInnovationCenter:Yes") {
 
-                        await sayTTS("Parfait, on vous envoie la facture par courrier tout de suite.     Vous pouvez laisser votre clé de la chambre dans la boité à l'entrée, ou sur la table de votre chambre. À très bientôt!", "fr");
+                        await sayTTS("Parfait, on vous envoie la facture par courrier tout de suite.     Vous pouvez laisser votre clé de la chambre dans la boité située à l'entrée, ou sur la table de votre chambre. À très bientôt!", "fr");
 
                         await webRequestDATA("https://maker.ifttt.com/trigger/EmailInvoice/with/key/c6h_lSARLyhKpzYEyNPt7STZGaW4knm53pc3Ur_BKR-", {
                             "value1": total.toString(),
