@@ -157,8 +157,6 @@ function webRequestDATA(webreq, mydata) {
                 'Content-Type': 'application/json',
                 // 'Content-Type': 'application/x-www-form-urlencoded',
             },
-            redirect: 'follow', // manual, *follow, error
-            referrer: 'no-referrer', // no-referrer, *client
             body: JSON.stringify(mydata), // body data type must match "Content-Type" header
         });
 
@@ -403,7 +401,7 @@ withHermes(async hermes => {
     listenIntent('AccorInnovationCenter:Checkout').then(async(data) => {
         if (data.topic === "hermes/intent/AccorInnovationCenter:Checkout") {
             var total = rs_cost + 350;
-            var checksum = "Très bien, faisons le tchèque aoute.   ";
+            var checksum = "Très bien, faisons le tchèque à oute.   ";
             checksum += "Votre nuit d'hôtel fera 350 euros.   ";
             checksum += "Vous avez dépensé " + rs_cost + " euros en room service.  ";
             checksum += "Ceci vous fait un total de " + total + " euros.  ";
@@ -418,7 +416,7 @@ withHermes(async hermes => {
 
                     if (data.topic === "hermes/intent/AccorInnovationCenter:Yes") {
 
-                        await sayTTS("Parfait, on vous envoie la facture par email tout de suite. Vous pouvez laisser votre clé dans la boité à l'entrée ou sur la table de votre chambre. À très bientôt!", "fr");
+                        await sayTTS("Parfait, on vous envoie la facture par courrier tout de suite.     Vous pouvez laisser votre clé de la chambre dans la boité à l'entrée, ou sur la table de votre chambre. À très bientôt!", "fr");
 
                         await webRequestDATA("https://maker.ifttt.com/trigger/EmailInvoice/with/key/c6h_lSARLyhKpzYEyNPt7STZGaW4knm53pc3Ur_BKR-", {
                             "value1": total.toString(),
