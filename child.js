@@ -310,11 +310,8 @@ withHermes(async hermes => {
                                     await myWait(3).then().catch();
 
 
-                                    await webRequestPOST("http://api.pushover.net", {
-                                        token: "a6j9dzt3e43pvmm8a5r8gmrwn3rdxc",
-                                        user: "uug6ffq8vqytsrvdqhva9hqeev1iia",
-                                        title: "Room Service",
-                                        message: "Votre commande arrive dans une minute!"
+                                    await webRequestPOST("https://maker.ifttt.com/trigger/PushNotification/with/key/c6h_lSARLyhKpzYEyNPt7STZGaW4knm53pc3Ur_BKR-", {
+                                        value1: "Votre commande arrive dans une minute!"
                                     }).then().catch();
 
                                     process.exit();
