@@ -396,6 +396,9 @@ withHermes(async hermes => {
     //Detect Reset
     listenIntent('AccorInnovationCenter:Reset').then(async(data) => {
         if (data.topic === "hermes/intent/AccorInnovationCenter:Reset") {
+
+            await sayTTS("Je met le profil à zéro.", "fr").then().catch();
+
             store.set('rs_cost', 0);
             process.exit();
         }
@@ -435,7 +438,7 @@ withHermes(async hermes => {
 
                     } else if (data.topic === "hermes/intent/AccorInnovationCenter:None") {
 
-                        await sayTTS("Désolé pour le désagrément, il a dû y avoir une erreur. S'il vous plait, présentez-vous à l'accueil pour faire le checkout.", "fr");
+                        await sayTTS("Désolé pour le désagrément, il a dû y avoir une erreur. S'il vous plait, présentez-vous à l'accueil pour faire le tchèque à oute.", "fr");
                         process.exit()
 
 
