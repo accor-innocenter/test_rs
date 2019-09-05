@@ -363,7 +363,11 @@ withHermes(async hermes => {
                                         temp_cost = 0;
                                         store.set('rs_cost', rs_cost);
 
-                                        await myWait(3).then().catch();
+                                        await webRequestDATA("https://maker.ifttt.com/trigger/PushRich/with/key/c6h_lSARLyhKpzYEyNPt7STZGaW4knm53pc3Ur_BKR-", {
+                                            "value1": "Commande de room service réalisée. Le montant de " + rs_cost + "€ sera débité de vote chambre."
+                                        }).then().catch();
+
+                                        await myWait(10).then().catch();
 
 
                                         await webRequestDATA("https://maker.ifttt.com/trigger/PushRich/with/key/c6h_lSARLyhKpzYEyNPt7STZGaW4knm53pc3Ur_BKR-", {
@@ -422,7 +426,7 @@ withHermes(async hermes => {
                             "value1": total.toString(),
                             "value2": rs_cost.toString()
 
-                        }).then((data)=>{
+                        }).then((data) => {
                             console.log(data);
                         }).catch();
 
