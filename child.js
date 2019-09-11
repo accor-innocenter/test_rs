@@ -399,6 +399,7 @@ withHermes(async hermes => {
 
             await sayTTS("Je met le profil à zéro.", "fr").then().catch();
 
+            rs_cost=0;
             store.set('rs_cost', 0);
             process.exit();
         }
