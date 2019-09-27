@@ -65,7 +65,7 @@ function sendNotifMQTT(msg, MQTT, IFTTT) {
     var sayClient = client;
 
     if (MQTT) {
-        sayClient.publish(this.topicNotif, msg);
+        sayClient.publish(topicNotif, msg);
     }
     if (IFTTT) {
         webRequestDATA("https://maker.ifttt.com/trigger/PushRich/with/key/c6h_lSARLyhKpzYEyNPt7STZGaW4knm53pc3Ur_BKR-", {
@@ -413,6 +413,7 @@ withHermes(async hermes => {
             rs_cost = 0;
             store.set('rs_cost', 0);
             rs_cost = 0;
+            sendNotifMQTT("Profil reseted!", true, false);
             setTimeout(() => {
                 process.exit();
             }, 1000);
