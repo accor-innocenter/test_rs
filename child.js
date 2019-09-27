@@ -235,6 +235,8 @@ withHermes(async hermes => {
 
     const dialog = hermes.dialog();
 
+    let _this = this;
+
     listenIntent('AccorInnovationCenter:OrderRS').then(async(data) => {
 
         if (data.topic === "hermes/intent/AccorInnovationCenter:OrderRS") {
@@ -386,7 +388,7 @@ withHermes(async hermes => {
                                         //await webRequestDATA("https://maker.ifttt.com/trigger/PushRich/with/key/c6h_lSARLyhKpzYEyNPt7STZGaW4knm53pc3Ur_BKR-", {
                                         //    "value1": "Commande de room service réalisée. Le montant de " + rs_cost + "€ sera débité de vote chambre."
                                         //}).then().catch();
-                                        this.sendNotifMQTT("Commande de room service réalisée. Le montant de " + rs_cost + "€ sera débité de vote chambre.", true, true);
+                                        sendNotifMQTT("Commande de room service réalisée. Le montant de " + rs_cost + "€ sera débité de vote chambre.", true, true);
 
                                         await myWait(15).then().catch();
 
@@ -394,7 +396,7 @@ withHermes(async hermes => {
                                         //await webRequestDATA("https://maker.ifttt.com/trigger/PushRich/with/key/c6h_lSARLyhKpzYEyNPt7STZGaW4knm53pc3Ur_BKR-", {
                                         //    "value1": "Votre commande arrive dans une minute!"
                                         //}).then().catch();
-                                        this.sendNotifMQTT("Votre commande arrive dans une minute!", true, true)
+                                        sendNotifMQTT("Votre commande arrive dans une minute!", true, true)
 
                                         process.exit();
 
