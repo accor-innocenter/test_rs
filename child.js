@@ -399,13 +399,13 @@ withHermes(async hermes => {
 
             await sayTTS("Je met le profil à zéro.", "fr").then().catch();
 
-            rs_cost=0;
+            rs_cost = 0;
             store.set('rs_cost', 0);
-            rs_cost=0;
-            setTimeout(()=>{
+            rs_cost = 0;
+            setTimeout(() => {
                 process.exit();
-            },1000);
-            
+            }, 1000);
+
         }
     });
 
@@ -428,7 +428,7 @@ withHermes(async hermes => {
 
                     if (data.topic === "hermes/intent/AccorInnovationCenter:Yes") {
 
-                        await sayTTS("Parfait, on vous envoie la facture par courrier tout de suite.     Vous pouvez laisser votre clé de la chambre dans la boité située à l'entrée, ou sur la table de votre chambre. À très bientôt!", "fr");
+                        await sayTTS("Parfait, on vous envoie la facture par courrier tout de suite.     Vous pouvez laisser votre clé de la chambre dans la boite située à l'entrée, ou sur la table de votre chambre. À très bientôt!", "fr");
 
                         await webRequestDATA("https://maker.ifttt.com/trigger/EmailInvoice/with/key/c6h_lSARLyhKpzYEyNPt7STZGaW4knm53pc3Ur_BKR-", {
                             "value1": total.toString(),
