@@ -28,6 +28,7 @@ if (store.hasOwn('rs_cost')) {
     rs_cost = store.get('rs_cost');
 }
 
+var topicNotif = "appNotif/appnotif"
 
 
 //MAKE SNIPS SAY SOMETHING (WITHOUT USER FEEDBACK)
@@ -53,6 +54,25 @@ function sayTTS(msg, lang) {
 
 
     });
+
+}
+
+
+
+//MAKE SNIPS SAY SOMETHING (WITHOUT USER FEEDBACK)
+function sendNotifMQTT(msg, MQTT, IFTTT) {
+
+    var sayClient = client;
+
+    if (MQTT) {
+        sayClient.publish(this.topicNotif, msg);
+    }
+    if (IFTTT) {
+        this.webRequestDATA("https://maker.ifttt.com/trigger/PushRich/with/key/c6h_lSARLyhKpzYEyNPt7STZGaW4knm53pc3Ur_BKR-", {
+            "value1": msg
+        }).then().catch();
+    }
+
 
 }
 
@@ -363,16 +383,18 @@ withHermes(async hermes => {
                                         temp_cost = 0;
                                         store.set('rs_cost', rs_cost);
 
-                                        await webRequestDATA("https://maker.ifttt.com/trigger/PushRich/with/key/c6h_lSARLyhKpzYEyNPt7STZGaW4knm53pc3Ur_BKR-", {
-                                            "value1": "Commande de room service réalisée. Le montant de " + rs_cost + "€ sera débité de vote chambre."
-                                        }).then().catch();
+                                        //await webRequestDATA("https://maker.ifttt.com/trigger/PushRich/with/key/c6h_lSARLyhKpzYEyNPt7STZGaW4knm53pc3Ur_BKR-", {
+                                        //    "value1": "Commande de room service réalisée. Le montant de " + rs_cost + "€ sera débité de vote chambre."
+                                        //}).then().catch();
+                                        this.sendNotifMQTT("Commande de room service réalisée. Le montant de " + rs_cost + "€ sera débité de vote chambre.", true, true);
 
-                                        await myWait(10).then().catch();
+                                        await myWait(15).then().catch();
 
 
-                                        await webRequestDATA("https://maker.ifttt.com/trigger/PushRich/with/key/c6h_lSARLyhKpzYEyNPt7STZGaW4knm53pc3Ur_BKR-", {
-                                            "value1": "Votre commande arrive dans une minute!"
-                                        }).then().catch();
+                                        //await webRequestDATA("https://maker.ifttt.com/trigger/PushRich/with/key/c6h_lSARLyhKpzYEyNPt7STZGaW4knm53pc3Ur_BKR-", {
+                                        //    "value1": "Votre commande arrive dans une minute!"
+                                        //}).then().catch();
+                                        this.sendNotifMQTT("Votre commande arrive dans une minute!", true, true)
 
                                         process.exit();
 
