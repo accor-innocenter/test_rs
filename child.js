@@ -68,7 +68,7 @@ function sendNotifMQTT(msg, MQTT, IFTTT) {
         sayClient.publish(this.topicNotif, msg);
     }
     if (IFTTT) {
-        this.webRequestDATA("https://maker.ifttt.com/trigger/PushRich/with/key/c6h_lSARLyhKpzYEyNPt7STZGaW4knm53pc3Ur_BKR-", {
+        webRequestDATA("https://maker.ifttt.com/trigger/PushRich/with/key/c6h_lSARLyhKpzYEyNPt7STZGaW4knm53pc3Ur_BKR-", {
             "value1": msg
         }).then().catch();
     }
@@ -197,19 +197,6 @@ function webRequestDATA(webreq, mydata) {
 
 
 
-
-//EXIT FUNCTION KILLS CHILD PROCESS (RELAUNCHED BY PARENT)
-function myExit(topic) {
-    if (topic === "hermes/intent/AccorInnovationCenter:Exit") {
-        sayTTS("Ok, on annule tout.", "fr").then(function() {
-            process.exit()
-            console.log("exit now");
-            throw new Error();
-        }).catch();
-
-
-    }
-}
 
 //EXIT FUNCTION KILLS CHILD PROCESS (RELAUNCHED BY PARENT)
 function myExit(topic) {
